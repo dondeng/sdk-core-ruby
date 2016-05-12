@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'mastercard-core'
+require 'mastercard/core/exceptions'
 
 class ExceptionTest < Minitest::Test
   include MasterCard::Core::Exceptions

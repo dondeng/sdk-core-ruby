@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'mastercard-core'
+require 'mastercard/core/util'
 
 class UtilTest < Minitest::Test
   include MasterCard::Core::Util
