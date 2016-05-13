@@ -18,9 +18,18 @@ module MasterCard
         #
         # Combines the query parameters of url and extra params into a single queryString.
         # All the query string parameters are lexicographically sorted
+        query = URI.parse(url).query
 
-        query = CGI.parse(URI.parse(url).query)
-        query = params.merge(query)
+        unless query.nil?
+          query = CGI.parse(URI.parse(url).query)
+        end
+
+        unless query.nil?
+          query = params.merge(query)
+        else
+          query = params
+        end
+        
         normalizedParams = Hash.new
         #Sort the parameters and
         query.sort.map do |key,value|
