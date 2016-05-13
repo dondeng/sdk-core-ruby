@@ -112,5 +112,17 @@ class UtilTest < Minitest::Test
 
   end
 
+  def test_uriRfc3986Encode
+    encode = uriRfc3986Encode("Formal=XML")
+    assert_equal("Formal%3DXML",encode)
+
+    encode = uriRfc3986Encode("WhqqH+TU95VgZMItpdq78BWb4cE=")
+    assert_equal("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D",encode)
+
+    encode = uriRfc3986Encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o")
+    assert_equal("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o",encode)
+
+  end
+
 
 end

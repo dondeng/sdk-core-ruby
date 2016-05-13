@@ -6,7 +6,7 @@ require 'base64'
 module MasterCard
   module Core
     module Util
-
+      extend self
       def validateURL(url)
         #
         # Validates that the given string is a valid URL
@@ -31,7 +31,7 @@ module MasterCard
           normalizedParams[key] = value
         end
 
-        return normalizedParams.map{ |k,v| "#{k}=#{v}"}.join("&")
+        return normalizedParams.map{ |k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"}.join("&")
       end
 
 
