@@ -73,6 +73,7 @@ module MasterCard
 
           begin
             response = http.request(request)
+            return handleResponse(response,response.body)
           rescue Errno::ECONNREFUSED
             raise APIException.new ("Connection to server could not be established.")
           end
@@ -86,11 +87,11 @@ module MasterCard
 
         def handleResponse(response,content)
           #Handles the exception and response
-          status = response.status
+          status = response.code.to_i
 
-          if 200 <= status <= 299
+          if 200 <= status && status <= 299
             return content
-          elsif 300 <= status <= 399
+          elsif 300 <= status && status <= 399
             raise InvalidRequestException.new("Unexpected response code returned from the API causing redirect",status,content)
           elsif status == 400
             raise InvalidRequestException.new("Bad request",status,content)
