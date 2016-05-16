@@ -106,6 +106,26 @@ module MasterCard
         end
       end
 
+
+      ################################################################################
+      # ObjectNotFoundException
+      ################################################################################
+
+      class ObjectNotFoundException < APIException
+        #
+        #Exception raised when the endpoint does not exist.
+        def initialize(message=nil,status=nil,error_data=nil)
+
+
+          if status.nil?
+              status = 404
+          end
+
+          #Call the base class constructor
+          super(message,status,error_data)
+        end
+      end
+
       ################################################################################
       # AuthenticationException
       ################################################################################
