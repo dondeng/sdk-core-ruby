@@ -50,14 +50,16 @@ module MasterCard
           #Separate the headers from the inputMap
           headers = Util.subMap(input,headerKey)
 
+          #Get the resourcePath containing values from input
           resourcePath = getFullResourcePath(action,resourcePath,input)
 
+          #Get the path parameters
           pathParams = getPathParams(action,input)
-
+          #Get the body
           body = getBody(action,input)
 
+          #Get the request Object
           request = getRequestObject(resourcePath,action,pathParams,body)
-
 
           #Add headers to request
           headers.each do |key,value|
@@ -65,11 +67,12 @@ module MasterCard
           end
 
           fullUrl = @baseURL+resourcePath
+          #Sign and get back the request
           request = Config.getAuthentication().signRequest(fullUrl,request,request.method,body,pathParams)
 
           uri = URI.parse(@baseURL)
-
-          http = getHTTPObject(uri,action,input)
+          #Get the http object
+          http = getHTTPObject(uri)
 
           begin
             response = http.request(request)
@@ -110,6 +113,7 @@ module MasterCard
         end
 
         def getBody(action,input)
+          #Returns the body hash depending on action
           body = nil
           case action.upcase
           when ACTION_CREATE, ACTION_DELETE
@@ -121,6 +125,7 @@ module MasterCard
         end
 
         def getPathParams(action,input)
+          #Returns the path params based on action
           pathParams = {KEY_FORMAT => JSON}
           case action.upcase
           when ACTION_LIST, ACTION_READ, ACTION_QUERY, ACTION_DELETE
@@ -131,8 +136,8 @@ module MasterCard
           return pathParams
         end
 
-        def getHTTPObject(uri,action,input)
-
+        def getHTTPObject(uri)
+          #Returns the HTTP Object
           http = Net::HTTP.new(uri.host,uri.port)
 
           if Config.isDebug()
@@ -148,12 +153,13 @@ module MasterCard
         end
 
         def encode_path_params(path, params)
+          #Encode and join the params
           encoded = URI.encode_www_form(params)
           [path, encoded].join("?")
         end
 
         def getRequestObject(path,action,pathParams,body)
-
+          #Retuns the request object based on action
           case action.upcase
           when ACTION_LIST, ACTION_READ, ACTION_QUERY
             verb = Net::HTTP::Get
@@ -192,6 +198,7 @@ module MasterCard
         end
 
         def preCheck()
+          #check if execute can be done
           auth = Config.getAuthentication()
 
           unless (auth.nil? || auth.is_a?(Authentication))

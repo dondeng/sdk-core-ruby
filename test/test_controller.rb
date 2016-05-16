@@ -51,8 +51,6 @@ class APIControllerTest < Minitest::Test
 
   def test_execute_local
 
-    #WebMock.disable_net_connect!
-
     stub_local = stub_request(:get, "http://localhost:8080/user/1?Format=JSON&b=naman%20aggarwal%20%2520&id=3").
       to_return(:status => 200, :body => "naman", :headers => {})
 
