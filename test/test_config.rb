@@ -22,7 +22,8 @@ class ConfigTest < Minitest::Test
     Config.setLocal(true)
     url = Config.getAPIBaseURL()
     assert_equal(Constants::API_BASE_LOCALHOST_URL,url)
-    assert(Config.getLocal())
+    assert(Config.isLocal())
+    Config.setLocal(false)
   end
 
 

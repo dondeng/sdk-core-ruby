@@ -15,7 +15,7 @@ module MasterCard
         @@debug = debug
       end
 
-      def self.getDebug()
+      def self.isDebug()
         return @@debug
       end
 
@@ -23,7 +23,7 @@ module MasterCard
         @@sandbox = sandbox
       end
 
-      def self.getSandbox()
+      def self.isSandbox()
         return @@sandbox
       end
 
@@ -31,7 +31,7 @@ module MasterCard
         @@localhost = local
       end
 
-      def self.getLocal
+      def self.isLocal
         return @@localhost
       end
 
