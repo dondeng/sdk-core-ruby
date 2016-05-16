@@ -59,10 +59,10 @@ module MasterCard
         end
 
 
-        def signRequest(uri,request)
+        def signRequest(url,request,method,data,params)
 
-          oauth_key = getOAuthKey(uri,request.method,request.data,request.params)
-          request.headers[OAuthParameters::AUTHORIZATION] = oauth_key
+          oauth_key = getOAuthKey(url,method,data,params)
+          request.add_field(OAuthParameters::AUTHORIZATION,oauth_key)
           return request
 
         end
@@ -73,6 +73,7 @@ module MasterCard
           oAuthBaseParameters = getOAuthBaseParameters(url,method,body)
           #Get the base string
           baseString = getBaseString(url, method, params,oAuthBaseParameters.getBaseParametersHash())
+
           #Sign the base string using the private key
           signature = signMessage(baseString)
 
