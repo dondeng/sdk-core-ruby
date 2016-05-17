@@ -1,8 +1,6 @@
 require "minitest/autorun"
 require "mastercard/core/controller"
 require "mastercard/security/oauth"
-require 'webmock/minitest'
-
 
 class APIControllerTest < Minitest::Test
   include MasterCard::Core
@@ -16,10 +14,9 @@ class APIControllerTest < Minitest::Test
     @auth = OAuth::OAuthAuthentication.new("gVaoFbo86jmTfOB4NUyGKaAchVEU8ZVPalHQRLTxeaf750b6!414b543630362f426b4f6636415a5973656c33735661383d",keyFile, "alias", "password")
     Config.setAuthentication(@auth)
     @controller = APIController.new
-    #By default allow connections
-    WebMock.allow_net_connect!
 
   end
+
 
   def test_initialization
     assert_kind_of APIController, @controller
@@ -48,7 +45,7 @@ class APIControllerTest < Minitest::Test
 
 
   end
-
+=begin
   def test_execute_local
 
     stub_local = stub_request(:get, "http://localhost:8080/user/1?Format=JSON&b=naman%20aggarwal%20%2520&id=3").
@@ -78,6 +75,35 @@ class APIControllerTest < Minitest::Test
     remove_request_stub(stub_local)
   end
 
+  def test_execute_local
+
+    input = {
+
+
+        "a"=>1,
+        "b"=>"naman aggarwal %20",
+        "id"=>3
+    }
+
+    header = []
+
+    action = "list"
+    resourcePath = "/user/{a}"
+
+    Config.setLocal(true)
+
+    cont = APIController.new
+
+
+    response = cont.execute(action,resourcePath,header,input)
+
+
+    assert_equal("naman",response)
+
+    Config.setLocal(false)
+  end
+
+
   def test_execute_local_301
 
     stub_local= stub_request(:get, "http://localhost:8080/user/1?Format=JSON&b=naman%20aggarwal%20%2520&id=3").
@@ -95,7 +121,7 @@ class APIControllerTest < Minitest::Test
 
     Config.setLocal(true)
 
-    assert_raises InvalidRequestException do
+    exc = assert_raises InvalidRequestException do
       cont = APIController.new
       cont.execute(action,resourcePath,header,input)
     end
@@ -122,25 +148,7 @@ class APIControllerTest < Minitest::Test
     end
 
   end
-
-  def test_insights
-
-    input = {
-    "Period" =>"",
-    "CurrentRow"=>"1",
-    "Sector"=>"",
-    "Offset"=>"25",
-    "Country"=>"US",
-    "Ecomm"=>""
-    }
-
-    header = []
-    action = "query"
-    resourcePath = "/sectorinsights/v1/sectins.svc/insights"
-
-    res =  @controller.execute(action,resourcePath,header,input)
-
-  end
+=end
 
   def test_getFullResourcePath
 
