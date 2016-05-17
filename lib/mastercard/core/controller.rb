@@ -1,3 +1,4 @@
+require 'mastercard/core/config'
 require 'mastercard/core/exceptions'
 require 'mastercard/core/util'
 require 'mastercard/security/authentication'
