@@ -27,7 +27,7 @@ module MasterCard
         KEY_CONTENT_TYPE = "Content-Type"
         APPLICATION_JSON = "application/json"
         RUBY_SDK       = "Ruby_SDK"
-        JSON           = "JSON"
+        JSON_STR           = "JSON"
 
 
         def initialize
@@ -93,6 +93,13 @@ module MasterCard
           #Handles the exception and response
           status = response.code.to_i
 
+          if content
+            begin
+              content = JSON.load content
+            rescue JSON::ParserError
+            end
+          end
+
           if 200 <= status && status <= 299
             return content
           elsif 300 <= status && status <= 399
@@ -127,7 +134,7 @@ module MasterCard
 
         def getPathParams(action,input)
           #Returns the path params based on action
-          pathParams = {KEY_FORMAT => JSON}
+          pathParams = {KEY_FORMAT => JSON_STR}
           case action.upcase
           when ACTION_LIST, ACTION_READ, ACTION_QUERY, ACTION_DELETE
             unless input.nil?
