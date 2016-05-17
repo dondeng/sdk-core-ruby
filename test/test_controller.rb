@@ -118,9 +118,27 @@ class APIControllerTest < Minitest::Test
 
 
     assert_raises ObjectNotFoundException do
-      cont = APIController.new
-      cont.execute(action,resourcePath,header,input)
+      @controller.execute(action,resourcePath,header,input)
     end
+
+  end
+
+  def test_insights
+
+    input = {
+    "Period" =>"",
+    "CurrentRow"=>"1",
+    "Sector"=>"",
+    "Offset"=>"25",
+    "Country"=>"US",
+    "Ecomm"=>""
+    }
+
+    header = []
+    action = "query"
+    resourcePath = "/sectorinsights/v1/sectins.svc/insights"
+
+    res =  @controller.execute(action,resourcePath,header,input)
 
   end
 
