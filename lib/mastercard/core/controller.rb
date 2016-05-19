@@ -150,7 +150,7 @@ module MasterCard
           #Returns the body hash depending on action
           body = nil
           case action.upcase
-          when ACTION_CREATE, ACTION_DELETE
+          when ACTION_CREATE, ACTION_UPDATE
             unless input.nil?
               body = input
             end
