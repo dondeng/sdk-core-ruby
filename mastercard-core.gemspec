@@ -25,7 +25,7 @@
 # SUCH DAMAGE.
 #
 Gem::Specification.new do |gem|
-  gem.name          = "mastercard-core-sdk"
+  gem.name          = "mastercard-core"
   gem.authors       = ["MasterCard"]
   gem.email         = ["naman.aggarwal@mastercard.com"]
   gem.summary       = %q{MasterCard core SDK}
