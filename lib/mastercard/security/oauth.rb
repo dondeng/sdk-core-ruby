@@ -61,10 +61,19 @@ module MasterCard
           oAuthParameters.setOAuthTimestamp(Util.getTimestamp())
           oAuthParameters.setOAuthSignatureMethod("RSA-SHA1")
           oAuthParameters.setOAuthVersion("1.0")
-          unless body.nil?
-            encodedHash = sha1Base64Encode(body)
-            oAuthParameters.setOAuthBodyHash(encodedHash)
+
+          if body.nil?
+            body = ""
           end
+
+          begin
+            body = body.to_json
+          rescue
+            #Do nothing and hope for the best
+          end
+
+          encodedHash = sha1Base64Encode(body)
+          oAuthParameters.setOAuthBodyHash(encodedHash)
 
           return oAuthParameters
         end
