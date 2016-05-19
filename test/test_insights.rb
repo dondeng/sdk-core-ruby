@@ -56,7 +56,7 @@ class InsightsTest < Minitest::Test
 
     response = Insights.query(mapObj)
 
-    assert_equal("70",response.get("SectorRecordList.Count"))
+    assert_equal(70,response.get("SectorRecordList.Count"))
     assert_equal("Success",response.get("SectorRecordList.Message"))
 
 
