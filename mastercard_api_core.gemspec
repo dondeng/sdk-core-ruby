@@ -25,11 +25,11 @@
 # SUCH DAMAGE.
 #
 Gem::Specification.new do |gem|
-  gem.name          = "mastercard-core"
+  gem.name          = "mastercard_api_core"
   gem.authors       = ["MasterCard"]
   gem.email         = ["naman.aggarwal@mastercard.com"]
   gem.summary       = %q{MasterCard core SDK}
-  gem.description   = %q{MasterCard core SDK}
+  gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
   gem.homepage      = "https://developer.mastercard.com"
   gem.version       = "1.0.0"
   gem.license       = "MasterCard SDK License"
@@ -38,4 +38,5 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
+  gem.add_development_dependency('simplecov')
 end
