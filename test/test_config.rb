@@ -24,7 +24,7 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-require 'minitest/autorun'
+require 'test_helper'
 require 'mastercard/core/config'
 
 class ConfigTest < Minitest::Test
