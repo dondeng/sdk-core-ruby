@@ -37,8 +37,8 @@ class InsightsTest < Minitest::Test
   include MasterCard::Test
 
   def setup
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "prod_key.p12")
-    @auth = OAuth::OAuthAuthentication.new("gVaoFbo86jmTfOB4NUyGKaAchVEU8ZVPalHQRLTxeaf750b6!414b543630362f426b4f6636415a5973656c33735661383d",keyFile, "alias", "password")
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
     Config.setAuthentication(@auth)
   end
 
