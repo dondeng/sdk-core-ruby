@@ -56,7 +56,7 @@ module MasterCard
         JSON_STR       = "JSON"
 
 
-        def initialize
+        def initialize(version=nil)
           #Set the parameters
           @baseURL = Config.getAPIBaseURL()
 
@@ -65,6 +65,13 @@ module MasterCard
           #Verify if the URL is correct
           unless Util.validateURL(@baseURL)
             raise APIException.new "URL: '" + @baseURL + "' is not a valid url"
+          end
+
+          #Set the version
+          unless version.nil?
+            @version = version
+          else
+            @version = Constants::VERSION
           end
 
         end
@@ -246,7 +253,7 @@ module MasterCard
           #Add default headers
           req.add_field(KEY_ACCEPT,APPLICATION_JSON)
           req.add_field(KEY_CONTENT_TYPE,APPLICATION_JSON)
-          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+Constants::VERSION)
+          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+@version)
 
           #Add body
 
