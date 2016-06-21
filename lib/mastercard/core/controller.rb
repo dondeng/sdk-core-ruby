@@ -53,10 +53,10 @@ module MasterCard
         KEY_CONTENT_TYPE = "Content-Type"
         APPLICATION_JSON = "application/json"
         RUBY_SDK       = "Ruby_SDK"
-        JSON_STR           = "JSON"
+        JSON_STR       = "JSON"
 
 
-        def initialize
+        def initialize(version=nil)
           #Set the parameters
           @baseURL = Config.getAPIBaseURL()
 
@@ -65,6 +65,13 @@ module MasterCard
           #Verify if the URL is correct
           unless Util.validateURL(@baseURL)
             raise APIException.new "URL: '" + @baseURL + "' is not a valid url"
+          end
+
+          #Set the version
+          unless version.nil?
+            @version = version
+          else
+            @version = Constants::VERSION
           end
 
         end
@@ -101,8 +108,40 @@ module MasterCard
           #Get the http object
           http = getHTTPObject(uri)
 
+          if Config.isDebug
+            puts "---- Request ----"
+            puts ""
+            puts "URL"
+            puts fullUrl+request.path
+            puts ""
+            puts "Headers"
+            request.each_header do |header_name, header_value|
+              puts "#{header_name} : #{header_value}"
+            end
+            puts ""
+            puts "Body"
+            puts request.body
+          end
+
           begin
             response = http.request(request)
+
+            if Config.isDebug
+              puts "---- Response ----"
+              puts ""
+              puts "Status Code"
+              puts response.code
+              puts ""
+              puts "Headers"
+              response.each_header do |header_name, header_value|
+                puts "#{header_name} : #{header_value}"
+              end
+              puts ""
+              puts "Body"
+              puts response.body
+            end
+
+
             return handleResponse(response,response.body)
           rescue Errno::ECONNREFUSED
             raise APIException.new ("Connection to server could not be established.")
@@ -174,10 +213,6 @@ module MasterCard
           #Returns the HTTP Object
           http = Net::HTTP.new(uri.host,uri.port)
 
-          if Config.isDebug()
-            http.set_debug_output($stdout)
-          end
-
           unless Config.isLocal()
             http.use_ssl = true
           end
@@ -218,7 +253,7 @@ module MasterCard
           #Add default headers
           req.add_field(KEY_ACCEPT,APPLICATION_JSON)
           req.add_field(KEY_CONTENT_TYPE,APPLICATION_JSON)
-          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+Constants::VERSION)
+          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+@version)
 
           #Add body
 

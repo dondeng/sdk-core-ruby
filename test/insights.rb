@@ -51,6 +51,10 @@ module MasterCard
 
       end
 
+      def self.getApiVersion
+        return "1.1.1"
+      end
+
       def self.query(criteria)
 
         obj = Insights.new(criteria)
