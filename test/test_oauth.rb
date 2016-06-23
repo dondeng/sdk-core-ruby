@@ -34,7 +34,7 @@ class OAuthTest < Minitest::Test
   include MasterCard::Core::Util
 
   def createOAuthObject
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "MCOpenAPI.p12")
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
     @auth = OAuthAuthentication.new("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", keyFile, "mckp", "mcapi")
   end
 
