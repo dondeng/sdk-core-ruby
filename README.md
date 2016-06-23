@@ -9,3 +9,6 @@ This is the MasterCard OpenAPI Ruby Core SDK
 ### Test With Coverage
 
 `COVERAGE=true rake test`
+
+### Test With XML Report
+`rake report`
