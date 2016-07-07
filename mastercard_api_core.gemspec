@@ -31,13 +31,13 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{MasterCard core SDK}
   gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
   gem.homepage      = "https://developer.mastercard.com"
-  gem.version       = "1.0.0"
-  gem.license       = "BSD2"
+  gem.version       = "1.0.3"
+  gem.license       = "BSD-2-Clause"
 
   gem.files         = Dir["{bin,spec,lib}/**/*"]+ Dir["data/*"]
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
-  gem.add_development_dependency('simplecov')
-  gem.add_development_dependency('ci_reporter_minitest')
+  gem.add_development_dependency 'simplecov', '~> 0'
+  gem.add_development_dependency 'ci_reporter_minitest', '~> 0'
 end
