@@ -53,7 +53,7 @@ class APIControllerTest < Minitest::Test
     Config.setAuthentication("skdhsdj")
 
     assert_raises APIException do
-      @controller.execute("some","some","seom","some")
+      @controller.execute("some","some","seom","2343","some")
     end
 
   end
@@ -175,6 +175,33 @@ class APIControllerTest < Minitest::Test
 
   end
 =end
+
+  def test_getPathParams
+
+    inputMap = {
+        'three' => 3,
+        'four'=> 4,
+        'five'=> 5
+    }
+
+    queryMap = {
+
+      "a" => 1,
+      "b" => "2"
+    }
+
+    #Action create
+    pathMap = @controller.send(:getPathParams,APIController::ACTION_CREATE, queryMap, inputMap)
+
+    assert_equal({'a'=>1,'b'=>"2",'Format'=>'JSON'},pathMap)
+
+    #action list
+    pathMap = @controller.send(:getPathParams,APIController::ACTION_LIST, queryMap, inputMap)
+    assert_equal({'a'=>1,'b'=>"2",'Format'=>'JSON','three'=>3,'four'=>4,'five'=>5},pathMap)
+
+
+
+  end
 
   def test_getFullResourcePath
 

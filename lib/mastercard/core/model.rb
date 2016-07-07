@@ -369,6 +369,10 @@ module MasterCard
           raise NotImplementedError.new("Child class must define getHeaderParams method to use this class")
         end
 
+        def getQueryParams(action)
+          raise NotImplementedError.new("Child class must define getQueryParams method to use this class")
+        end
+
         def self.getApiVersion()
           raise NotImplementedError.new("Child class must define getApiVersion method to use this class")
         end
@@ -414,7 +418,7 @@ module MasterCard
         def self.execute(action,inputObject)
 
           controller = APIController.new(self.getApiVersion)
-          response = controller.execute(action,inputObject.getResourcePath(action),inputObject.getHeaderParams(action),inputObject.getObject())
+          response = controller.execute(action,inputObject.getResourcePath(action),inputObject.getHeaderParams(action),inputObject.getQueryParams(action),inputObject.getObject())
           returnObjClass = inputObject.class
 
           if action == APIController::ACTION_LIST

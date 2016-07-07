@@ -76,7 +76,7 @@ module MasterCard
 
         end
 
-        def execute(action,resourcePath,headerKey,input)
+        def execute(action,resourcePath,headerKey,queryKey,input)
 
           #Check preconditions for execute
           preCheck()
@@ -84,11 +84,14 @@ module MasterCard
           #Separate the headers from the inputMap
           headers = Util.subMap(input,headerKey)
 
+          #Separate the query from the inputMap
+          queryParams = Util.subMap(input,queryKey)
+
           #Get the resourcePath containing values from input
           resourcePath = getFullResourcePath(action,resourcePath,input)
 
           #Get the path parameters
-          pathParams = getPathParams(action,input)
+          pathParams = getPathParams(action,queryParams,input)
           #Get the body
           body = getBody(action,input)
 
@@ -197,7 +200,7 @@ module MasterCard
           return body
         end
 
-        def getPathParams(action,input)
+        def getPathParams(action,queryParams,input)
           #Returns the path params based on action
           pathParams = {KEY_FORMAT => JSON_STR}
           case action.upcase
@@ -206,6 +209,10 @@ module MasterCard
               pathParams = pathParams.merge(input)
             end
           end
+
+          #merge the queryParams
+          pathParams = pathParams.merge(queryParams)
+
           return pathParams
         end
 
