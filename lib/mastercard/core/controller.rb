@@ -115,7 +115,7 @@ module MasterCard
             puts "---- Request ----"
             puts ""
             puts "URL"
-            puts fullUrl+request.path
+            puts @baseURL+request.path
             puts ""
             puts "Headers"
             request.each_header do |header_name, header_value|
