@@ -30,10 +30,10 @@ module MasterCard
   module Core
     module Model
       ################################################################################
-      # BaseMap
+      # RequestMap
       ################################################################################
 
-      class BaseMap
+      class RequestMap
 
         KEY_LIST = "list"
 
@@ -346,16 +346,16 @@ module MasterCard
       # BaseObject
       ################################################################################
 
-      class BaseObject < BaseMap
+      class BaseObject < RequestMap
         include MasterCard::Core::Controller
 
-        def initialize(baseMap = nil)
+        def initialize(requestMap = nil)
 
           #call the base class constructor
           super()
 
-          unless baseMap.nil?
-            setAll(baseMap.getObject())
+          unless requestMap.nil?
+            setAll(requestMap.getObject())
           end
 
         end
@@ -381,7 +381,7 @@ module MasterCard
 
           unless criteria.nil?
 
-            if criteria.is_a?(BaseMap)
+            if criteria.is_a?(RequestMap)
               inputObject.setAll(criteria.getObject())
             else
               inputObject.setAll(criteria)
@@ -424,26 +424,26 @@ module MasterCard
           if action == APIController::ACTION_LIST
             returnObj = []
 
-            if response.key?(BaseMap::KEY_LIST)
-              response = response[BaseMap::KEY_LIST]
+            if response.key?(RequestMap::KEY_LIST)
+              response = response[RequestMap::KEY_LIST]
             end
 
             if response.is_a?(Hash)
 
               response.each do |key,value|
 
-                baseMap = BaseMap.new
-                baseMap.setAll(value)
-                returnObj.push(returnObjClass.new(baseMap))
+                requestMap = RequestMap.new
+                requestMap.setAll(value)
+                returnObj.push(returnObjClass.new(requestMap))
 
               end
 
             elsif response.is_a(Array)
 
               response.each do |value|
-                baseMap = BaseMap.new
-                baseMap.setAll(value)
-                returnObj.push(returnObjClass.new(baseMap))
+                requestMap = RequestMap.new
+                requestMap.setAll(value)
+                returnObj.push(returnObjClass.new(requestMap))
 
               end
 
@@ -451,9 +451,9 @@ module MasterCard
             return returnObj
           else
 
-            baseMap = BaseMap.new
-            baseMap.setAll(response)
-            return returnObjClass.new(baseMap)
+            requestMap = RequestMap.new
+            requestMap.setAll(response)
+            return returnObjClass.new(requestMap)
 
           end
 

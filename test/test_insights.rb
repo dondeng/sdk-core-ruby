@@ -44,7 +44,7 @@ class InsightsTest < Minitest::Test
 
   def test_example_insights
 
-    mapObj = BaseMap.new
+    mapObj = RequestMap.new
 
     mapObj.set("Period","")
     mapObj.set("CurrentRow","1")
