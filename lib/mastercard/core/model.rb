@@ -424,7 +424,7 @@ module MasterCard
           if action == APIController::ACTION_LIST
             returnObj = []
 
-            if response.key?(RequestMap::KEY_LIST)
+            if response.is_a?(Hash) && response.key?(RequestMap::KEY_LIST)
               response = response[RequestMap::KEY_LIST]
             end
 
@@ -438,7 +438,7 @@ module MasterCard
 
               end
 
-            elsif response.is_a(Array)
+            elsif response.is_a?(Array)
 
               response.each do |value|
                 requestMap = RequestMap.new
