@@ -26,17 +26,18 @@
 #
 Gem::Specification.new do |gem|
   gem.name          = "mastercard_api_core"
-  gem.authors       = ["MasterCard"]
-  gem.email         = ["naman.aggarwal@mastercard.com"]
+  gem.authors       = ["MasterCard Worldwide"]
+  gem.email         = ["APISupport@mastercard.com"]
   gem.summary       = %q{MasterCard core SDK}
   gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
   gem.homepage      = "https://developer.mastercard.com"
-  gem.version       = "1.0.0"
+  gem.version       = "0.0.2"
   gem.license       = "BSD-2-Clause"
 
   gem.files         = Dir["{bin,spec,lib}/**/*"]+ Dir["data/*"]
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
-  gem.add_development_dependency 'simplecov', '~> 0.11.2', '> 0.11.2'
+  gem.add_development_dependency 'simplecov', '~> 0'
+  gem.add_development_dependency 'ci_reporter_minitest', '~> 0'
 end

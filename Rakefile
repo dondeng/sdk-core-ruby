@@ -25,10 +25,15 @@
 # SUCH DAMAGE.
 #
 require 'rake/testtask'
+require 'ci/reporter/rake/minitest'
+
+
 
 Rake::TestTask.new do |t|
   t.libs << 'test'
 end
 
+
 desc "Run tests"
 task :default => :test
+task :report => ['ci:setup:minitest', 'test']

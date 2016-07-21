@@ -36,8 +36,8 @@ class APIControllerTest < Minitest::Test
 
   def setup
 
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "prod_key.p12")
-    @auth = OAuth::OAuthAuthentication.new("gVaoFbo86jmTfOB4NUyGKaAchVEU8ZVPalHQRLTxeaf750b6!414b543630362f426b4f6636415a5973656c33735661383d",keyFile, "alias", "password")
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
     Config.setAuthentication(@auth)
     @controller = APIController.new
 
@@ -53,7 +53,7 @@ class APIControllerTest < Minitest::Test
     Config.setAuthentication("skdhsdj")
 
     assert_raises APIException do
-      @controller.execute("some","some","seom","some")
+      @controller.execute("some","some","seom","2343","some")
     end
 
   end
@@ -175,6 +175,33 @@ class APIControllerTest < Minitest::Test
 
   end
 =end
+
+  def test_getPathParams
+
+    inputMap = {
+        'three' => 3,
+        'four'=> 4,
+        'five'=> 5
+    }
+
+    queryMap = {
+
+      "a" => 1,
+      "b" => "2"
+    }
+
+    #Action create
+    pathMap = @controller.send(:getPathParams,APIController::ACTION_CREATE, queryMap, inputMap)
+
+    assert_equal({'a'=>1,'b'=>"2",'Format'=>'JSON'},pathMap)
+
+    #action list
+    pathMap = @controller.send(:getPathParams,APIController::ACTION_LIST, queryMap, inputMap)
+    assert_equal({'a'=>1,'b'=>"2",'Format'=>'JSON','three'=>3,'four'=>4,'five'=>5},pathMap)
+
+
+
+  end
 
   def test_getFullResourcePath
 

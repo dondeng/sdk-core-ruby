@@ -34,8 +34,8 @@ class OAuthTest < Minitest::Test
   include MasterCard::Core::Util
 
   def createOAuthObject
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "MCOpenAPI.p12")
-    @auth = OAuthAuthentication.new("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", keyFile, "mckp", "mcapi")
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d", keyFile, "alias", "password")
   end
 
   def test_auth_base_class
@@ -104,7 +104,7 @@ class OAuthTest < Minitest::Test
     signature = @auth.signMessage(baseString)
     signature = uriRfc3986Encode(signature)
 
-    assert_equal("Yh7m15oV0XbRTFP%2Fp4T56sg38QDLKEh4cVK90taaHstE%2FjTdCn53CtbUETQFWLR2VdMMv8ujeewM3NDzLRfVLqwE%2FsWbpeaWtm%2FpffAvHjXFTquo4hBE6CPRNEqFyIjCz4lNaYoeaQMFJVmYfSF2CWn46RP3wmIrfs5IfQNtwUI%3D",signature)
+    assert_equal("S0IF6DIEuurQVVM4VYJl6W02KW54aZx%2FNLiCC351Oygadl8QdnrMl3bauOZn4BiED1ciCUkfbEyAE2SYFjHSQMq8Tc1f7yf8Grc8qTo%2FtRacMF0fBvqaAL46hW0ECW9w33IotWQcZ1CXr4%2BwjXACLOSac5rUl0bMtj%2FKS9xguV98UXrHipe1NUos1%2Fukuo1JqSBccFDrw1Ngeux8A1fCAcLPqvlpnPUBi9TLVKozAyBruhg8UHk5LzFCUIw3sjfdH5SmwaXu9YntuqspIuV9o9%2FBYGu6HSgYgcCE%2FfbUQOwUsNpV9GncDAhzXyNdMm2Y7btde9ELnAqDE8OKf8%2BVqw%3D%3D",signature)
 
   end
 

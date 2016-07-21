@@ -53,10 +53,10 @@ module MasterCard
         KEY_CONTENT_TYPE = "Content-Type"
         APPLICATION_JSON = "application/json"
         RUBY_SDK       = "Ruby_SDK"
-        JSON_STR           = "JSON"
+        JSON_STR       = "JSON"
 
 
-        def initialize
+        def initialize(version=nil)
           #Set the parameters
           @baseURL = Config.getAPIBaseURL()
 
@@ -67,9 +67,16 @@ module MasterCard
             raise APIException.new "URL: '" + @baseURL + "' is not a valid url"
           end
 
+          #Set the version
+          unless version.nil?
+            @version = version
+          else
+            @version = Constants::VERSION
+          end
+
         end
 
-        def execute(action,resourcePath,headerKey,input)
+        def execute(action,resourcePath,headerKey,queryKey,input)
 
           #Check preconditions for execute
           preCheck()
@@ -77,11 +84,14 @@ module MasterCard
           #Separate the headers from the inputMap
           headers = Util.subMap(input,headerKey)
 
+          #Separate the query from the inputMap
+          queryParams = Util.subMap(input,queryKey)
+
           #Get the resourcePath containing values from input
           resourcePath = getFullResourcePath(action,resourcePath,input)
 
           #Get the path parameters
-          pathParams = getPathParams(action,input)
+          pathParams = getPathParams(action,queryParams,input)
           #Get the body
           body = getBody(action,input)
 
@@ -101,8 +111,40 @@ module MasterCard
           #Get the http object
           http = getHTTPObject(uri)
 
+          if Config.isDebug
+            puts "---- Request ----"
+            puts ""
+            puts "URL"
+            puts @baseURL+request.path
+            puts ""
+            puts "Headers"
+            request.each_header do |header_name, header_value|
+              puts "#{header_name} : #{header_value}"
+            end
+            puts ""
+            puts "Body"
+            puts request.body
+          end
+
           begin
             response = http.request(request)
+
+            if Config.isDebug
+              puts "---- Response ----"
+              puts ""
+              puts "Status Code"
+              puts response.code
+              puts ""
+              puts "Headers"
+              response.each_header do |header_name, header_value|
+                puts "#{header_name} : #{header_value}"
+              end
+              puts ""
+              puts "Body"
+              puts response.body
+            end
+
+
             return handleResponse(response,response.body)
           rescue Errno::ECONNREFUSED
             raise APIException.new ("Connection to server could not be established.")
@@ -158,7 +200,7 @@ module MasterCard
           return body
         end
 
-        def getPathParams(action,input)
+        def getPathParams(action,queryParams,input)
           #Returns the path params based on action
           pathParams = {KEY_FORMAT => JSON_STR}
           case action.upcase
@@ -167,16 +209,16 @@ module MasterCard
               pathParams = pathParams.merge(input)
             end
           end
+
+          #merge the queryParams
+          pathParams = pathParams.merge(queryParams)
+
           return pathParams
         end
 
         def getHTTPObject(uri)
           #Returns the HTTP Object
           http = Net::HTTP.new(uri.host,uri.port)
-
-          if Config.isDebug()
-            http.set_debug_output($stdout)
-          end
 
           unless Config.isLocal()
             http.use_ssl = true
@@ -218,7 +260,7 @@ module MasterCard
           #Add default headers
           req.add_field(KEY_ACCEPT,APPLICATION_JSON)
           req.add_field(KEY_CONTENT_TYPE,APPLICATION_JSON)
-          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+Constants::VERSION)
+          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+@version)
 
           #Add body
 

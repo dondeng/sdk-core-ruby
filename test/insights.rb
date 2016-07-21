@@ -51,6 +51,20 @@ module MasterCard
 
       end
 
+      def getQueryParams(action)
+
+        if action.upcase == "QUERY"
+          return []
+        end
+
+        raise StandardError("Invalid action #{action.to_s}")
+
+      end
+
+      def self.getApiVersion
+        return "1.1.1"
+      end
+
       def self.query(criteria)
 
         obj = Insights.new(criteria)
