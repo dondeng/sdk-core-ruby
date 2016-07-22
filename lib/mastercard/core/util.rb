@@ -65,8 +65,8 @@ module MasterCard
 
           normalizedParams[key] = value
         end
-
-        return normalizedParams.map{ |k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"}.join("&")
+        normalizedParams = normalizedParams.map{ |k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}"}.join("&")
+        return normalizedParams.gsub("+","%20")
       end
 
 
