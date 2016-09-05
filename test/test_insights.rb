@@ -58,8 +58,5 @@ class InsightsTest < Minitest::Test
 
     assert_equal(70,response.get("SectorRecordList.Count"))
     assert_equal("Success",response.get("SectorRecordList.Message"))
-
-
   end
-
 end

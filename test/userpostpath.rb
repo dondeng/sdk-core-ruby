@@ -24,11 +24,61 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+
+
+require "mastercard/core/model"
+
 module MasterCard
-  module Core
-    module Constants
-      API_BASE_LIVE_URL       = "https://api.mastercard.com"
-      API_BASE_SANDBOX_URL    = "https://sandbox.api.mastercard.com"
+    module Test
+        class UserPostPath < MasterCard::Core::Model::BaseObject
+            include MasterCard::Core::Model
+            #
+
+            @__store = {
+                '8a1ee0a9-77bd-403c-b524-099b434378ef' => OperationConfig.new("/mock_crud_server/users/{user_id}/posts", "list", [], []),
+
+            }
+
+            protected
+
+            def self.getOperationConfig(uuid)
+                if @__store.key?(uuid)
+                    return @__store[uuid]
+                end
+                raise NotImplementedError.new("Invalid operationUUID supplied:"+ uuid)
+            end
+
+            def self.getOperationMetadata()
+                return OperationMetadata.new("0.0.1", "http://localhost:8081")
+            end
+
+            public
+
+
+
+
+
+
+            def self.listByCriteria(criteria = nil)
+                #
+                #List objects of type UserPostPath
+                #
+                #@param Dict criteria
+                #@return Array of UserPostPath object matching the criteria.
+
+                if criteria.nil?
+                    return self.execute("8a1ee0a9-77bd-403c-b524-099b434378ef",UserPostPath.new)
+                else
+                    return self.execute("8a1ee0a9-77bd-403c-b524-099b434378ef",UserPostPath.new(criteria))
+                end
+            end
+        end
     end
-  end
 end
+
+
+
+
+
+
+

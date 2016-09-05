@@ -56,10 +56,10 @@ module MasterCard
         JSON_STR       = "JSON"
 
 
-        def initialize(version=nil)
+        def initialize()
           #Set the parameters
           @baseURL = Config.getAPIBaseURL()
-
+          
           @baseURL = removeForwardSlashFromTail(@baseURL)
 
           #Verify if the URL is correct
@@ -67,47 +67,17 @@ module MasterCard
             raise APIException.new "URL: '" + @baseURL + "' is not a valid url"
           end
 
-          #Set the version
-          unless version.nil?
-            @version = version
-          else
-            @version = Constants::VERSION
-          end
-
         end
 
-        def execute(action,resourcePath,headerKey,queryKey,input)
-
+        def execute(config,metadata,input)
+          
           #Check preconditions for execute
           preCheck()
-
-          #Separate the headers from the inputMap
-          headers = Util.subMap(input,headerKey)
-
-          #Separate the query from the inputMap
-          queryParams = Util.subMap(input,queryKey)
-
-          #Get the resourcePath containing values from input
-          resourcePath = getFullResourcePath(action,resourcePath,input)
-
-          #Get the path parameters
-          pathParams = getPathParams(action,queryParams,input)
-          #Get the body
-          body = getBody(action,input)
-
+          
           #Get the request Object
-          request = getRequestObject(resourcePath,action,pathParams,body)
-
-          #Add headers to request
-          headers.each do |key,value|
-            request.add_field(key,value)
-          end
-
-          fullUrl = @baseURL+resourcePath
-          #Sign and get back the request
-          request = Config.getAuthentication().signRequest(fullUrl,request,request.method,body,pathParams)
-
-          uri = URI.parse(@baseURL)
+          request = getRequestObject(config,metadata,input)
+          
+          uri = URI.parse(request.path)
           #Get the http object
           http = getHTTPObject(uri)
 
@@ -115,7 +85,7 @@ module MasterCard
             puts "---- Request ----"
             puts ""
             puts "URL"
-            puts @baseURL+request.path
+            puts request.path
             puts ""
             puts "Headers"
             request.each_header do |header_name, header_value|
@@ -217,10 +187,11 @@ module MasterCard
         end
 
         def getHTTPObject(uri)
+          
           #Returns the HTTP Object
           http = Net::HTTP.new(uri.host,uri.port)
-
-          unless Config.isLocal()
+          
+          if uri.scheme ==  "https"
             http.use_ssl = true
           end
 
@@ -234,9 +205,35 @@ module MasterCard
           [path, encoded].join("?")
         end
 
-        def getRequestObject(path,action,pathParams,body)
+        def getRequestObject(config,metadata,input)
+          
+          #action,resourcePath,headerKey,queryKey,input
+          
+          #Separate the headers from the inputMap
+          headers = Util.subMap(input,config.getHeaderParams())
+
+          #Separate the query from the inputMap
+          queryParams = Util.subMap(input,config.getQueryParams())
+          
+          #We need to resolve the host
+          resolvedHost = @baseURL
+          unless metadata.getHost().nil?
+            resolvedHost = metadata.getHost()
+          end
+          
+          fullUrl = resolvedHost + config.getResoucePath()
+
+          #Get the resourcePath containing values from input
+          fullUrl = getFullResourcePath(config.getAction(),fullUrl,input)
+
+          #Get the path parameters
+          pathParams = getPathParams(config.getAction(),queryParams,input)
+          #Get the body
+          body = getBody(config.getAction(),input)
+
+          
           #Retuns the request object based on action
-          case action.upcase
+          case config.getAction().upcase
           when ACTION_LIST, ACTION_READ, ACTION_QUERY
             verb = Net::HTTP::Get
 
@@ -249,26 +246,34 @@ module MasterCard
           when ACTION_UPDATE
             verb = Net::HTTP::Put
           else
-            raise APIException.new "Invalid action #{action}"
+            raise APIException.new "Invalid action #{config.getAction()}"
           end
 
           #add url parameters  to path
-          path = encode_path_params(path,pathParams)
+          fullUrl = encode_path_params(fullUrl,pathParams)
 
-          req = verb.new(path)
+          request = verb.new(fullUrl)
 
           #Add default headers
-          req.add_field(KEY_ACCEPT,APPLICATION_JSON)
-          req.add_field(KEY_CONTENT_TYPE,APPLICATION_JSON)
-          req.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+@version)
+          request.add_field(KEY_ACCEPT,APPLICATION_JSON)
+          request.add_field(KEY_CONTENT_TYPE,APPLICATION_JSON)
+          request.add_field(KEY_USER_AGENT,RUBY_SDK+"/"+metadata.getVersion())
 
           #Add body
 
           unless body.nil?
-            req.body = body.to_json
+            request.body = body.to_json
+          end
+          
+          #Add headers to request
+          headers.each do |key,value|
+            request.add_field(key,value)
           end
 
-          return req
+          #Sign and get back the request
+          request = Config.getAuthentication().signRequest(fullUrl,request,request.method,body,pathParams)
+
+          return request
 
 
         end

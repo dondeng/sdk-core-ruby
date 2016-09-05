@@ -24,11 +24,66 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-module MasterCard
-  module Core
-    module Constants
-      API_BASE_LIVE_URL       = "https://api.mastercard.com"
-      API_BASE_SANDBOX_URL    = "https://sandbox.api.mastercard.com"
-    end
+
+require 'baseTest'
+require 'userpostpath'
+require 'mastercard/security/oauth'
+require 'mastercard/core/model'
+
+
+class UserPostPathTest < BaseTest
+  include MasterCard::Security::OAuth
+  include MasterCard::Core
+  include MasterCard::Core::Model
+  include MasterCard::Test
+
+
+  def setup
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
+    Config.setAuthentication(@auth)
+    Config.setDebug(true)
   end
+
+  def self.test_order
+    :alpha
+  end
+
+    
+    
+    
+    
+            
+
+  def test_get_user_posts_with_path
+    #get_user_posts_with_path
+        
+
+    mapObj = RequestMap.new
+
+    mapObj.set("user_id", "1")
+        
+
+        
+
+    ignoreAsserts = Array.new
+        
+
+    response = UserPostPath.listByCriteria(mapObj)
+    assertEqual(ignoreAsserts, "id", response[0].get("id").to_s.downcase, "1".downcase)
+    assertEqual(ignoreAsserts, "title", response[0].get("title").to_s.downcase, "My Title".downcase)
+    assertEqual(ignoreAsserts, "body", response[0].get("body").to_s.downcase, "some body text".downcase)
+    assertEqual(ignoreAsserts, "userId", response[0].get("userId").to_s.downcase, "1".downcase)
+        
+
+    BaseTest.putResponse("get_user_posts_with_path", response)
+  end
+    
+    
+    
+    
+    
+    
+
 end
+

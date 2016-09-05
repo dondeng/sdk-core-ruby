@@ -31,8 +31,6 @@ class ConfigTest < Minitest::Test
   include MasterCard::Core
 
   def setup
-
-    Config.setLocal(false)
     Config.setSandbox(true)
   end
 
@@ -45,11 +43,10 @@ class ConfigTest < Minitest::Test
 
   def test_set_local
 
-    Config.setLocal(true)
+    Config.setSandbox(false)
     url = Config.getAPIBaseURL()
-    assert_equal(Constants::API_BASE_LOCALHOST_URL,url)
-    assert(Config.isLocal())
-    Config.setLocal(false)
+    assert_equal(Constants::API_BASE_LIVE_URL,url)
+    Config.setSandbox(true)
   end
 
 

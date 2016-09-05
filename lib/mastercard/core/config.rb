@@ -70,14 +70,11 @@ module MasterCard
       end
 
       def self.getAPIBaseURL
-
-        if @@localhost
-          return Constants::API_BASE_LOCALHOST_URL
-        elsif @@sandbox
+        if @@sandbox
           return Constants::API_BASE_SANDBOX_URL
+        else
+          return Constants::API_BASE_LIVE_URL
         end
-
-        return Constants::API_BASE_LIVE_URL
       end
     end
   end
