@@ -26,6 +26,7 @@
 #
 require 'test_helper'
 require "mastercard/core/controller"
+require "mastercard/core/model"
 require "mastercard/security/oauth"
 
 class APIControllerTest < Minitest::Test
@@ -33,6 +34,8 @@ class APIControllerTest < Minitest::Test
   include MasterCard::Core::Controller
   include MasterCard::Security
   include MasterCard::Core::Exceptions
+  include MasterCard::Core::Model
+  
 
   def setup
 
@@ -43,7 +46,6 @@ class APIControllerTest < Minitest::Test
 
   end
 
-
   def test_initialization
     assert_kind_of APIController, @controller
   end
@@ -51,9 +53,12 @@ class APIControllerTest < Minitest::Test
   def test_execute_wrongNoAuth
 
     Config.setAuthentication("skdhsdj")
+    
+    config = OperationConfig.new("/somePath", "query", [], [])
+    metadata = OperationMetadata.new("0.0.1", nil)
 
     assert_raises APIException do
-      @controller.execute("some","some","seom","2343","some")
+      @controller.execute(config, metadata, {})
     end
 
   end
@@ -71,110 +76,6 @@ class APIControllerTest < Minitest::Test
 
 
   end
-=begin
-  def test_execute_local
-
-    stub_local = stub_request(:get, "http://localhost:8080/user/1?Format=JSON&b=naman%20aggarwal%20%2520&id=3").
-      to_return(:status => 200, :body => "naman", :headers => {})
-
-    input = {
-
-
-        "a"=>1,
-        "b"=>"naman aggarwal %20",
-        "id"=>3
-    }
-
-    header = []
-
-    action = "list"
-    resourcePath = "/user/{a}"
-
-    Config.setLocal(true)
-
-    cont = APIController.new
-    response = cont.execute(action,resourcePath,header,input)
-
-    assert_equal("naman",response)
-
-    Config.setLocal(false)
-    remove_request_stub(stub_local)
-  end
-
-  def test_execute_local
-
-    input = {
-
-
-        "a"=>1,
-        "b"=>"naman aggarwal %20",
-        "id"=>3
-    }
-
-    header = []
-
-    action = "list"
-    resourcePath = "/user/{a}"
-
-    Config.setLocal(true)
-
-    cont = APIController.new
-
-
-    response = cont.execute(action,resourcePath,header,input)
-
-
-    assert_equal("naman",response)
-
-    Config.setLocal(false)
-  end
-
-
-  def test_execute_local_301
-
-    stub_local= stub_request(:get, "http://localhost:8080/user/1?Format=JSON&b=naman%20aggarwal%20%2520&id=3").
-      to_return(:status => 301, :body => "", :headers => {})
-
-    input = {
-        "a"=>1,
-        "b"=>"naman aggarwal %20",
-        "id"=>3
-    }
-    header = []
-
-    action = "list"
-    resourcePath = "/user/{a}"
-
-    Config.setLocal(true)
-
-    exc = assert_raises InvalidRequestException do
-      cont = APIController.new
-      cont.execute(action,resourcePath,header,input)
-    end
-
-    Config.setLocal(false)
-    remove_request_stub(stub_local)
-  end
-
-  def test_execute_sandbox_not_found
-
-    input = {
-        "a"=>1,
-        "b"=>"naman aggarwal %20",
-        "id"=>3
-    }
-    header = []
-
-    action = "list"
-    resourcePath = "/user/{a}"
-
-
-    assert_raises ObjectNotFoundException do
-      @controller.execute(action,resourcePath,header,input)
-    end
-
-  end
-=end
 
   def test_getPathParams
 
