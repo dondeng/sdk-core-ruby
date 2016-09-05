@@ -432,7 +432,7 @@ module MasterCard
           response = APIController.new.execute(config,metadata,inputObject.getObject())
           returnObjClass = inputObject.class
 
-          if config.getAction() == APIController::ACTION_LIST
+          if config.getAction().upcase == APIController::ACTION_LIST
             returnObj = []
 
             if response.is_a?(Hash) && response.key?(RequestMap::KEY_LIST)

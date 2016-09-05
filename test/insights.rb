@@ -54,6 +54,7 @@ module MasterCard
       def self.query(criteria)
         return self.execute("query", Insights.new(criteria))
       end
+      
     end
   end
 end

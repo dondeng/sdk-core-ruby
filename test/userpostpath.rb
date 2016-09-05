@@ -24,39 +24,61 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-require 'test_helper'
-require 'insights'
-require 'mastercard/security/oauth'
-require 'mastercard/core/model'
 
 
-class InsightsTest < Minitest::Test
-  include MasterCard::Security::OAuth
-  include MasterCard::Core
-  include MasterCard::Core::Model
-  include MasterCard::Test
+require "mastercard/core/model"
 
-  def setup
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
-    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
-    Config.setAuthentication(@auth)
-  end
+module MasterCard
+    module Test
+        class UserPostPath < MasterCard::Core::Model::BaseObject
+            include MasterCard::Core::Model
+            #
 
-  def test_example_insights
+            @__store = {
+                '8a1ee0a9-77bd-403c-b524-099b434378ef' => OperationConfig.new("/mock_crud_server/users/{user_id}/posts", "list", [], []),
 
-    mapObj = RequestMap.new
+            }
 
-    mapObj.set("Period","")
-    mapObj.set("CurrentRow","1")
-    mapObj.set("Sector","")
-    mapObj.set("Offset","25")
-    mapObj.set("Country","US")
-    mapObj.set("Ecomm","")
+            protected
+
+            def self.getOperationConfig(uuid)
+                if @__store.key?(uuid)
+                    return @__store[uuid]
+                end
+                raise NotImplementedError.new("Invalid operationUUID supplied:"+ uuid)
+            end
+
+            def self.getOperationMetadata()
+                return OperationMetadata.new("0.0.1", "http://localhost:8081")
+            end
+
+            public
 
 
-    response = Insights.query(mapObj)
 
-    assert_equal(70,response.get("SectorRecordList.Count"))
-    assert_equal("Success",response.get("SectorRecordList.Message"))
-  end
+
+
+
+            def self.listByCriteria(criteria = nil)
+                #
+                #List objects of type UserPostPath
+                #
+                #@param Dict criteria
+                #@return Array of UserPostPath object matching the criteria.
+
+                if criteria.nil?
+                    return self.execute("8a1ee0a9-77bd-403c-b524-099b434378ef",UserPostPath.new)
+                else
+                    return self.execute("8a1ee0a9-77bd-403c-b524-099b434378ef",UserPostPath.new(criteria))
+                end
+            end
+        end
+    end
 end
+
+
+
+
+
+
+

@@ -76,7 +76,6 @@ module MasterCard
           
           #Get the request Object
           request = getRequestObject(config,metadata,input)
-
           
           uri = URI.parse(request.path)
           #Get the http object
@@ -86,7 +85,7 @@ module MasterCard
             puts "---- Request ----"
             puts ""
             puts "URL"
-            puts @baseURL+request.path
+            puts request.path
             puts ""
             puts "Headers"
             request.each_header do |header_name, header_value|
@@ -188,10 +187,11 @@ module MasterCard
         end
 
         def getHTTPObject(uri)
+          
           #Returns the HTTP Object
           http = Net::HTTP.new(uri.host,uri.port)
-
-          unless Config.isLocal()
+          
+          if uri.scheme ==  "https"
             http.use_ssl = true
           end
 
@@ -216,7 +216,10 @@ module MasterCard
           queryParams = Util.subMap(input,config.getQueryParams())
           
           #We need to resolve the host
-          resolvedHost = metadata.getHost().nil? ? @baseURL : metadata.getHost()
+          resolvedHost = @baseURL
+          unless metadata.getHost().nil?
+            resolvedHost = metadata.getHost()
+          end
           
           fullUrl = resolvedHost + config.getResoucePath()
 
