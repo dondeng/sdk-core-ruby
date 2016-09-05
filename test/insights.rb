@@ -28,51 +28,33 @@ require "mastercard/core/model"
 
 module MasterCard
   module Test
-    include MasterCard::Core::Model
-    class Insights < BaseObject
+    class Insights < MasterCard::Core::Model::BaseObject
+      include MasterCard::Core::Model
 
-      def getResourcePath(action)
-
-        if action.upcase == "QUERY"
-          return "/sectorinsights/v1/sectins.svc/insights"
+      @__store = {
+        'query' => OperationConfig.new("/sectorinsights/v1/sectins.svc/insights", "query", [], [])
+      }
+      
+      protected 
+      
+      def self.getOperationConfig(uuid)
+        if @__store.key?(uuid)
+          return @__store[uuid]
         end
-
-        raise StandardError("Invalid action #{action.to_s}")
-
+        raise NotImplementedError.new("Invalid operationUUID supplied:"+ operationUUID)
+      end
+      
+      def self.getOperationMetadata()
+        return OperationMetadata.new("0.0.1", nil)
       end
 
-      def getHeaderParams(action)
-
-        if action.upcase == "QUERY"
-          return []
-        end
-
-        raise StandardError("Invalid action #{action.to_s}")
-
-      end
-
-      def getQueryParams(action)
-
-        if action.upcase == "QUERY"
-          return []
-        end
-
-        raise StandardError("Invalid action #{action.to_s}")
-
-      end
-
-      def self.getApiVersion
-        return "1.1.1"
-      end
-
+      
+      public
+      
       def self.query(criteria)
-
-        obj = Insights.new(criteria)
-        return Insights.queryObject(obj)
-
+        return self.execute("query", Insights.new(criteria))
       end
-
-
+      
     end
   end
 end

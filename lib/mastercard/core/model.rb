@@ -340,7 +340,59 @@ module MasterCard
 
 
       end
+      
+      ################################################################################
+      # OperationMetadata
+      ################################################################################
 
+      class OperationMetadata
+       
+        def initialize(version, host)
+          @version = version
+          @host = host
+        end
+        
+        def getVersion()
+          return @version
+        end
+        
+        def getHost()
+          return @host
+        end
+       
+      end
+      
+      
+      ################################################################################
+      # OperationConfig
+      ################################################################################
+
+      class OperationConfig
+       
+        def initialize(resourcePath, action, headerParams, queryParams)
+          @resourcePath = resourcePath
+          @action = action
+          @headerParams = headerParams
+          @queryParams = queryParams
+        end
+        
+        def getResoucePath()
+           return @resourcePath
+        end
+        
+        def getAction()
+          return @action
+        end
+        
+        def getHeaderParams()
+          return @headerParams
+        end
+        
+        def getQueryParams()
+          return @queryParams
+        end
+        
+      end
 
       ################################################################################
       # BaseObject
@@ -361,67 +413,26 @@ module MasterCard
         end
 
 
-        def getResourcePath(action)
-          raise NotImplementedError.new("Child class must define getResourcePath method to use this class")
+        protected
+        
+        def self.getOperationConfig(uuid)
+          raise NotImplementedError.new("Child class must define getOperationConfig method to use this class")
         end
 
-        def getHeaderParams(action)
-          raise NotImplementedError.new("Child class must define getHeaderParams method to use this class")
+        def self.getOperationMetadata()
+          raise NotImplementedError.new("Child class must define getOperationMetadata method to use this class")
         end
+        
+        def self.execute(operationUUID,inputObject)
+          
+          
+          config = inputObject.class.getOperationConfig(operationUUID)
+          metadata = inputObject.class.getOperationMetadata()
 
-        def getQueryParams(action)
-          raise NotImplementedError.new("Child class must define getQueryParams method to use this class")
-        end
-
-        def self.getApiVersion()
-          raise NotImplementedError.new("Child class must define getApiVersion method to use this class")
-        end
-
-        def self.readObject(inputObject,criteria=nil)
-
-          unless criteria.nil?
-
-            if criteria.is_a?(RequestMap)
-              inputObject.setAll(criteria.getObject())
-            else
-              inputObject.setAll(criteria)
-            end
-
-          end
-
-          return self.execute(APIController::ACTION_READ,inputObject)
-
-        end
-
-        def self.listObjects(inputObject)
-          return self.execute(APIController::ACTION_LIST,inputObject)
-        end
-
-        def self.createObject(inputObject)
-          return self.execute(APIController::ACTION_CREATE,inputObject)
-        end
-
-        def self.queryObject(inputObject)
-          return self.execute(APIController::ACTION_QUERY,inputObject)
-        end
-
-        def self.deleteObject(inputObject)
-          return self.execute(APIController::ACTION_DELETE,inputObject)
-        end
-
-        def self.updateObject(inputObject)
-          return self.execute(APIController::ACTION_UPDATE,inputObject)
-        end
-
-        private
-
-        def self.execute(action,inputObject)
-
-          controller = APIController.new(self.getApiVersion)
-          response = controller.execute(action,inputObject.getResourcePath(action),inputObject.getHeaderParams(action),inputObject.getQueryParams(action),inputObject.getObject())
+          response = APIController.new.execute(config,metadata,inputObject.getObject())
           returnObjClass = inputObject.class
 
-          if action == APIController::ACTION_LIST
+          if config.getAction().upcase == APIController::ACTION_LIST
             returnObj = []
 
             if response.is_a?(Hash) && response.key?(RequestMap::KEY_LIST)
