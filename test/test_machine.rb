@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-#
+#
 # Copyright (c) 2016 MasterCard International Incorporated
 # All rights reserved.
 #
@@ -24,20 +24,57 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-Gem::Specification.new do |gem|
-  gem.name          = "mastercard_api_core"
-  gem.authors       = ["MasterCard Worldwide"]
-  gem.email         = ["APISupport@mastercard.com"]
-  gem.summary       = %q{MasterCard core SDK}
-  gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
-  gem.homepage      = "https://developer.mastercard.com"
-  gem.version       = "1.2.1"
-  gem.license       = "BSD-2-Clause"
 
-  gem.files         = Dir["{bin,spec,lib}/**/*"]+ Dir["data/*"]
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
-  gem.add_development_dependency 'simplecov', '~> 0'
-  gem.add_development_dependency 'ci_reporter_minitest', '~> 0'
+require 'test_helper'
+require 'machine'
+require 'mastercard/security/oauth'
+require 'mastercard/core/model'
+
+
+class MachineTest < Minitest::Test
+    include MasterCard::Security::OAuth
+    include MasterCard::Core
+    include MasterCard::Core::Model
+    include MasterCard::Test
+
+
+    def setup
+      keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+      @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
+      Config.setAuthentication(@auth)
+      Config.setDebug(true)
+    end
+
+    def self.test_order
+        :alpha
+    end
+
+    
+    
+    
+    
+            
+
+    def test_sample_machines_nearby
+        #sample_machines_nearby
+        
+
+    
+        map = RequestMap.new
+        map.set("latitude", "36.121174")
+        map.set("longitude", "-115.169609")
+        
+        
+        response = Machine.listByCriteria(map)
+        
+        assert_equal("3355 S Las Vegas Blvd The Venetian",response[0].get("address"))
+    end
+    
+    
+    
+    
+    
+    
+
 end
+

@@ -74,12 +74,17 @@ module MasterCard
           #Check preconditions for execute
           preCheck()
           
-          #Get the request Object
-          request = getRequestObject(config,metadata,input)
+          resolvedHost = @baseURL
+          unless metadata.getHost().nil?
+            resolvedHost = metadata.getHost()
+          end
           
-          uri = URI.parse(request.path)
+          uri = URI.parse(resolvedHost)
           #Get the http object
           http = getHTTPObject(uri)
+          
+          #Get the request Object
+          request = getRequestObject(config,metadata,input)
 
           if Config.isDebug
             puts "---- Request ----"
@@ -231,28 +236,29 @@ module MasterCard
           #Get the body
           body = getBody(config.getAction(),input)
 
+          #add url parameters  to path
+          fullUrl = encode_path_params(fullUrl,pathParams)
+          
+          uri = URI(fullUrl)
           
           #Retuns the request object based on action
           case config.getAction().upcase
           when ACTION_LIST, ACTION_READ, ACTION_QUERY
-            verb = Net::HTTP::Get
+            request = Net::HTTP::Get.new uri
 
           when ACTION_CREATE
-            verb = Net::HTTP::Post
+            request = Net::HTTP::Post.new uri
 
           when ACTION_DELETE
-            verb = Net::HTTP::Delete
+            request = Net::HTTP::Delete.new uri
 
           when ACTION_UPDATE
-            verb = Net::HTTP::Put
+            request = Net::HTTP::Put.new uri
           else
             raise APIException.new "Invalid action #{config.getAction()}"
           end
 
-          #add url parameters  to path
-          fullUrl = encode_path_params(fullUrl,pathParams)
-
-          request = verb.new(fullUrl)
+          
 
           #Add default headers
           request.add_field(KEY_ACCEPT,APPLICATION_JSON)

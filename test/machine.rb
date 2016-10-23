@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-#
+#
 # Copyright (c) 2016 MasterCard International Incorporated
 # All rights reserved.
 #
@@ -24,20 +24,58 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-Gem::Specification.new do |gem|
-  gem.name          = "mastercard_api_core"
-  gem.authors       = ["MasterCard Worldwide"]
-  gem.email         = ["APISupport@mastercard.com"]
-  gem.summary       = %q{MasterCard core SDK}
-  gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
-  gem.homepage      = "https://developer.mastercard.com"
-  gem.version       = "1.2.1"
-  gem.license       = "BSD-2-Clause"
 
-  gem.files         = Dir["{bin,spec,lib}/**/*"]+ Dir["data/*"]
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
-  gem.add_development_dependency 'simplecov', '~> 0'
-  gem.add_development_dependency 'ci_reporter_minitest', '~> 0'
+
+require "mastercard/core/model"
+
+module MasterCard
+    module Test
+        class Machine < MasterCard::Core::Model::BaseObject
+            include MasterCard::Core::Model
+            #
+
+            @__store = {
+                'd654a774-a835-4852-ab25-7ba879ab050b' => OperationConfig.new("/vending-sandbox-api/api/v1/machine/nearby", "list", [], ["latitude","longitude"]),
+
+            }
+
+            protected
+
+            def self.getOperationConfig(uuid)
+                if @__store.key?(uuid)
+                    return @__store[uuid]
+                end
+                raise NotImplementedError.new("Invalid operationUUID supplied:"+ uuid)
+            end
+
+            def self.getOperationMetadata()
+                return OperationMetadata.new("0.0.1", "https://www.mastercardlabs.com")
+            end
+
+            public
+
+
+
+            def self.listByCriteria(criteria = nil)
+                #
+                #List objects of type Machine
+                #
+                #@param Dict criteria
+                #@return Array of Machine object matching the criteria.
+
+                if criteria.nil?
+                    return self.execute("d654a774-a835-4852-ab25-7ba879ab050b",Machine.new)
+                else
+                    return self.execute("d654a774-a835-4852-ab25-7ba879ab050b",Machine.new(criteria))
+                end
+            end
+        end
+    end
 end
+
+
+
+
+
+
+
