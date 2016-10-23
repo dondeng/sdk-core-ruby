@@ -24,39 +24,57 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+
 require 'test_helper'
-require 'insights'
+require 'machine'
 require 'mastercard/security/oauth'
 require 'mastercard/core/model'
 
 
-class InsightsTest < Minitest::Test
-  include MasterCard::Security::OAuth
-  include MasterCard::Core
-  include MasterCard::Core::Model
-  include MasterCard::Test
-
-  def setup
-    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
-    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
-    Config.setAuthentication(@auth)
-  end
-
-  def test_example_insights
-
-    mapObj = RequestMap.new
-
-    mapObj.set("Period","")
-    mapObj.set("CurrentRow","1")
-    mapObj.set("Sector","")
-    mapObj.set("Offset","25")
-    mapObj.set("Country","US")
-    mapObj.set("Ecomm","")
+class MachineTest < Minitest::Test
+    include MasterCard::Security::OAuth
+    include MasterCard::Core
+    include MasterCard::Core::Model
+    include MasterCard::Test
 
 
-    #response = Insights.query(mapObj)
+    def setup
+      keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+      @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
+      Config.setAuthentication(@auth)
+      Config.setDebug(true)
+    end
 
-    #assert_equal(70,response.get("SectorRecordList.Count"))
-    #assert_equal("Success",response.get("SectorRecordList.Message"))
-  end
+    def self.test_order
+        :alpha
+    end
+
+    
+    
+    
+    
+            
+
+    def test_sample_machines_nearby
+        #sample_machines_nearby
+        
+
+    
+        map = RequestMap.new
+        map.set("latitude", "36.121174")
+        map.set("longitude", "-115.169609")
+        
+        
+        response = Machine.listByCriteria(map)
+        
+        assert_equal("3355 S Las Vegas Blvd The Venetian",response[0].get("address"))
+    end
+    
+    
+    
+    
+    
+    
+
 end
+
