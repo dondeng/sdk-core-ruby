@@ -40,7 +40,7 @@ class MachineTest < Minitest::Test
 
     def setup
       keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
-      @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "alias", "password")
+      @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "test", "password")
       Config.setAuthentication(@auth)
       Config.setDebug(true)
     end
