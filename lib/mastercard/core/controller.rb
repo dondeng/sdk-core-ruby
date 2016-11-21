@@ -236,7 +236,10 @@ module MasterCard
           resourcePath = config.getResoucePath().dup
           if (resourcePath.index("{:env}"))
             environment = ""
-            if !Config.getEnvironment().nil? && !Config.getEnvironment().empty?
+            
+            if !metadata.getEnvironment().nil? && !metadata.getEnvironment().empty?
+              environment = metadata.getEnvironment()
+            elsif !Config.getEnvironment().nil? && !Config.getEnvironment().empty?
               environment = Config.getEnvironment()
             end
             

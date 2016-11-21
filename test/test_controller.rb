@@ -133,6 +133,7 @@ class APIControllerTest < Minitest::Test
     
     config = OperationConfig.new("/atms/v1/{:env}/locations", "query", [], [])
     metadata = OperationMetadata.new("0.0.1", nil)
+    metadata2 = OperationMetadata.new("0.0.1", nil, "andrea")
     
     
     request = @controller.send(:getRequestObject,config,metadata,{})
@@ -157,6 +158,10 @@ class APIControllerTest < Minitest::Test
     Config.setEnvironment(nil)
     request = @controller.send(:getRequestObject,config,metadata,{})
     assert_equal("/atms/v1/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment(nil)
+    request = @controller.send(:getRequestObject,config,metadata2,{})
+    assert_equal("/atms/v1/andrea/locations?Format=JSON", request.path)
     
   end
 

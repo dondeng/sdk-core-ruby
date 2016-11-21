@@ -347,9 +347,10 @@ module MasterCard
 
       class OperationMetadata
        
-        def initialize(version, host)
+        def initialize(version, host, environment = nil)
           @version = version
           @host = host
+          @environment = environment
         end
         
         def getVersion()
@@ -358,6 +359,10 @@ module MasterCard
         
         def getHost()
           return @host
+        end
+        
+        def getEnvironment()
+          return @environment
         end
        
       end
