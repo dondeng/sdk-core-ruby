@@ -36,8 +36,11 @@ module MasterCard
       def validateURL(url)
         #
         # Validates that the given string is a valid URL
-        return !URI.regexp.match(url).nil?
-
+        if url =~ URI::regexp
+          return true
+        else
+          return false
+        end
       end
 
       def normalizeParams(url,params)

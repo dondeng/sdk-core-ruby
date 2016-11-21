@@ -31,8 +31,9 @@ module MasterCard
     class Config
 
       private
-      @@sandbox = true
       @@debug   = false
+      @@environment = nil
+      @@subdomain = "sandbox"
       @@authentication = nil
       @@localhost  = false
 
@@ -46,20 +47,42 @@ module MasterCard
       end
 
       def self.setSandbox(sandbox)
-        @@sandbox = sandbox
+        if sandbox
+          @@subdomain = "sandbox"
+        else
+          @@subdomain = nil
+        end
       end
-
+      
       def self.isSandbox()
-        return @@sandbox
+        return @@subdomain == "sandbox"
+      end
+      
+      def self.getSudDomain()
+        return @@subdomain
+      end
+      
+      def self.setSubDomain(subdomain)
+        if !subdomain.nil? && !subdomain.empty? 
+          @@subdomain = subdomain
+        else 
+          @@subdomain = nil
+        end
+      end
+      
+      def self.getEnvironment()
+        return @@environment
+      end
+      
+      def self.setEnvironment(environment)
+        if !environment.nil? && !environment.empty? 
+          @@environment = environment
+        else
+          @@environment = nil
+        end
       end
 
-      def self.setLocal(local)
-        @@localhost = local
-      end
 
-      def self.isLocal
-        return @@localhost
-      end
 
       def self.setAuthentication(auth)
         @@authentication = auth
@@ -69,13 +92,6 @@ module MasterCard
         return @@authentication
       end
 
-      def self.getAPIBaseURL
-        if @@sandbox
-          return Constants::API_BASE_SANDBOX_URL
-        else
-          return Constants::API_BASE_LIVE_URL
-        end
-      end
     end
   end
 end

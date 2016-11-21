@@ -103,6 +103,62 @@ class APIControllerTest < Minitest::Test
 
 
   end
+  
+  
+  def test_subdomain
+    assert_equal("https://sandbox.api.mastercard.com", @controller.send(:generateHost))
+    
+    Config.setSandbox(true)
+    assert_equal("https://sandbox.api.mastercard.com", @controller.send(:generateHost))
+    
+    Config.setSandbox(false)
+    assert_equal("https://api.mastercard.com", @controller.send(:generateHost))
+    
+    Config.setSubDomain("stage")
+    assert_equal("https://stage.api.mastercard.com", @controller.send(:generateHost))
+    
+    Config.setSubDomain("")
+    assert_equal("https://api.mastercard.com", @controller.send(:generateHost))
+    
+    Config.setSubDomain(nil)
+    assert_equal("https://api.mastercard.com", @controller.send(:generateHost))
+    
+    
+    Config.setSubDomain("sandbox")
+      
+  end
+  
+  
+  def test_environment
+    
+    config = OperationConfig.new("/atms/v1/{:env}/locations", "query", [], [])
+    metadata = OperationMetadata.new("0.0.1", nil)
+    
+    
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment("MTF")
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/MTF/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment("ITF")
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/ITF/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment("PEAT")
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/PEAT/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment("")
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/locations?Format=JSON", request.path)
+    
+    Config.setEnvironment(nil)
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("/atms/v1/locations?Format=JSON", request.path)
+    
+  end
 
   def test_getFullResourcePath
 
