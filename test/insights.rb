@@ -45,7 +45,7 @@ module MasterCard
       end
       
       def self.getOperationMetadata()
-        return OperationMetadata.new("0.0.1", nil)
+        return OperationMetadata.new("0.0.1", "https://sandbox.api.mastercard.com")
       end
 
       
