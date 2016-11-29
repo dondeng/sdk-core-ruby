@@ -31,10 +31,10 @@ module MasterCard
     class Config
 
       private
-      @@sandbox = true
       @@debug   = false
-      @@authentication = nil
-      @@localhost  = false
+      @@environment = Environment::SANDBOX
+      @@authentication = nil;
+      @@registeredInstances = {}
 
       public
       def self.setDebug(debug)
@@ -46,20 +46,32 @@ module MasterCard
       end
 
       def self.setSandbox(sandbox)
-        @@sandbox = sandbox
+        if sandbox
+          @@environment = Environment::SANDBOX
+        else
+          @@environment = Environment::PRODUCTION
+        end
+      end
+      
+      def self.isSandbox
+        return @@environment == Environment::SANDBOX
       end
 
-      def self.isSandbox()
-        return @@sandbox
+
+      def self.getEnvironment
+        return @@environment
+      end
+      
+      def self.setEnvironment(environment)
+
+        if !environment.nil? && !environment.empty?
+          if Environment::MAPPING.key?(environment)
+            @@registeredInstances.values().each { |instance| instance.setEnvironment(environment) }
+            @@environment = environment
+          end
+        end
       end
 
-      def self.setLocal(local)
-        @@localhost = local
-      end
-
-      def self.isLocal
-        return @@localhost
-      end
 
       def self.setAuthentication(auth)
         @@authentication = auth
@@ -69,13 +81,20 @@ module MasterCard
         return @@authentication
       end
 
-      def self.getAPIBaseURL
-        if @@sandbox
-          return Constants::API_BASE_SANDBOX_URL
-        else
-          return Constants::API_BASE_LIVE_URL
+      def self.registerResourceConfig(instance)
+        if !@@registeredInstances.key?(instance.class.name)
+          @@registeredInstances[instance.class.name] = instance
         end
       end
+
+      def self.clearResourceConfig
+        @@registeredInstances = {}
+      end
+
+      def self.sizeResourceConfig
+         return @@registeredInstances.length
+      end
+
     end
   end
 end

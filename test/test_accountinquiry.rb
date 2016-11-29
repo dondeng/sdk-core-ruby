@@ -25,29 +25,40 @@
 # SUCH DAMAGE.
 #
 require 'test_helper'
-require 'mastercard/core/config'
+require 'accountinquiry'
+require 'mastercard/security/oauth'
+require 'mastercard/core/model'
 
-class ConfigTest < Minitest::Test
+
+class InsightsTest < Minitest::Test
+  include MasterCard::Security::OAuth
   include MasterCard::Core
+  include MasterCard::Core::Model
+  include MasterCard::Test
 
   def setup
-    Config.setSandbox(true)
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "test", "password")
+    Config.setAuthentication(@auth)
   end
 
-  def test_config_get_url
+  def test_example_insights
 
-    url = Config.getAPIBaseURL()
-    assert_equal(Constants::API_BASE_SANDBOX_URL,url)
+    mapObj = RequestMap.new
+
+    mapObj.set("Period","")
+    mapObj.set("CurrentRow","1")
+    mapObj.set("Sector","")
+    mapObj.set("Offset","25")
+    mapObj.set("Country","US")
+    mapObj.set("Ecomm","")
+
+
+    response = AccountInquiry.update(mapObj)
+
+    assert_equal("True",response.get("Account.Listed"))
+    assert_equal("S",response.get("Account.ReasonCode"))
+    assert_equal("STOLEN",response.get("Account.Reason"))
 
   end
-
-  def test_set_local
-
-    Config.setSandbox(false)
-    url = Config.getAPIBaseURL()
-    assert_equal(Constants::API_BASE_LIVE_URL,url)
-    Config.setSandbox(true)
-  end
-
-
 end

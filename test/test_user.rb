@@ -319,28 +319,80 @@ class UserTest < BaseTest
     
     
             
-  def test_delete_user
-    #delete_user
-        
+    def test_delete_user
+        #delete_user
+            
 
-    mapObj = RequestMap.new
+        mapObj = RequestMap.new
 
-        
+            
 
-    mapObj.set("id", BaseTest.resolveResponseValue("create_user.id"))
-        
-    id = mapObj.get("id") ? mapObj.get("id") : "ssss"
+        mapObj.set("id", "1")
+            
+        id = mapObj.get("id") ? mapObj.get("id") : "ssss"
 
-    ignoreAsserts = Array.new
-        
+        ignoreAsserts = Array.new
+            
 
-    response = User.deleteById(id, mapObj)
-        
+        response = User.deleteById(id, mapObj)
+            
 
-    BaseTest.putResponse("delete_user", response)
-  end
+        BaseTest.putResponse("delete_user", response)
+    end
     
 
+
+    def test_delete_user_200
+        #delete_user_200
+        
+
+        
+    
+        map = RequestMap.new
+        
+        map.set("id", BaseTest.resolveResponseValue("create_user.id"));
+        
+        id = map.get("id") ? map.get("id") : "ssss"
+        response = User.delete200ById(id, map)
+
+        ignoreAsserts = Array.new
+        
+        
+
+        BaseTest.putResponse("delete_user_200", response)
+        
+    end
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+            
+    def test_delete_user_204
+        #delete_user_204
+        
+
+        
+    
+        map = RequestMap.new
+        
+        map.set("id", BaseTest.resolveResponseValue("create_user.id"));
+        
+        id = map.get("id") ? map.get("id") : "ssss"
+        response = User.delete204ById(id, map)
+
+        ignoreAsserts = Array.new
+        
+        
+
+        BaseTest.putResponse("delete_user_204", response)
+        
+    end
     
     
     

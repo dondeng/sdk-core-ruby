@@ -25,6 +25,8 @@
 # SUCH DAMAGE.
 #
 require 'test_helper'
+require 'resourceconfig'
+require "mastercard/core/constants"
 require "mastercard/core/controller"
 require "mastercard/core/model"
 require "mastercard/security/oauth"
@@ -32,10 +34,11 @@ require "mastercard/security/oauth"
 class APIControllerTest < Minitest::Test
   include MasterCard::Core
   include MasterCard::Core::Controller
+  include MasterCard::Core::Environment
   include MasterCard::Security
   include MasterCard::Core::Exceptions
   include MasterCard::Core::Model
-  
+
 
   def setup
 
@@ -102,6 +105,114 @@ class APIControllerTest < Minitest::Test
 
 
 
+  end
+
+
+  def test_config
+    Config.setSandbox(true)
+    assert_equal("sandbox", Config.getEnvironment())
+
+    Config.setSandbox(false)
+    assert_equal("production", Config.getEnvironment())
+
+    Config.setEnvironment("stage")
+    assert_equal("stage", Config.getEnvironment())
+
+    Config.setEnvironment("itf")
+    assert_equal("itf", Config.getEnvironment())
+
+    Config.setEnvironment("")
+    assert_equal("itf", Config.getEnvironment())
+
+    Config.setEnvironment(nil)
+    assert_equal("itf", Config.getEnvironment())
+
+    Config.setSandbox(true)
+
+  end
+
+
+  def test_ResourceConfig
+    resourceConfig = ResourceConfig.instance
+    Config.registerResourceConfig(resourceConfig)
+    resourceCongi2 = ResourceConfig.instance
+
+    assert_equal(1, Config.sizeResourceConfig())
+
+    Config.setEnvironment(Environment::SANDBOX)
+    assert_equal("https://sandbox.api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
+    Config.setEnvironment(Environment::PRODUCTION)
+    assert_equal("https://api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
+    Config.setEnvironment(Environment::STAGE)
+    assert_equal("https://stage.api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
+    Config.setEnvironment(Environment::DEV)
+    assert_equal("https://dev.api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
+  end
+
+  
+  
+  def test_environment
+
+
+    Config.setSandbox(true)
+    resourceConfig = ResourceConfig.instance
+    assert_equal(1, Config.sizeResourceConfig())
+
+    config = OperationConfig.new("/atms/v1/{:env}/locations", "query", [], [])
+
+    Config.setEnvironment(Environment::SANDBOX)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/locations?Format=JSON", request.uri.to_s)
+
+    Config.setEnvironment(Environment::STAGE)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://stage.api.mastercard.com/atms/v1/locations?Format=JSON", request.uri.to_s)
+
+    Config.setEnvironment(Environment::PRODUCTION)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://api.mastercard.com/atms/v1/locations?Format=JSON", request.uri.to_s)
+
+    Config.setEnvironment(Environment::DEV)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://dev.api.mastercard.com/atms/v1/locations?Format=JSON", request.uri.to_s)
+
+    Config.setEnvironment(Environment::MTF)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/mtf/locations?Format=JSON", request.uri.to_s)
+    
+    Config.setEnvironment(Environment::ITF)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/itf/locations?Format=JSON", request.uri.to_s)
+    
+    Config.setEnvironment("PEAT")
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/itf/locations?Format=JSON", request.uri.to_s)
+    
+    Config.setEnvironment("")
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/itf/locations?Format=JSON", request.uri.to_s)
+    
+    Config.setEnvironment(nil)
+    metadata = OperationMetadata.new("0.0.1", ResourceConfig.instance.getHost(), ResourceConfig.instance.getContext())
+    request = @controller.send(:getRequestObject,config,metadata,{})
+    assert_equal("https://sandbox.api.mastercard.com/atms/v1/itf/locations?Format=JSON", request.uri.to_s)
+    
   end
 
   def test_getFullResourcePath

@@ -56,28 +56,20 @@ module MasterCard
         JSON_STR       = "JSON"
 
 
-        def initialize()
-          #Set the parameters
-          @baseURL = Config.getAPIBaseURL()
-          
-          @baseURL = removeForwardSlashFromTail(@baseURL)
-
-          #Verify if the URL is correct
-          unless Util.validateURL(@baseURL)
-            raise APIException.new "URL: '" + @baseURL + "' is not a valid url"
-          end
-
-        end
-
         def execute(config,metadata,input)
           
           #Check preconditions for execute
           preCheck()
           
-          resolvedHost = @baseURL
-          unless metadata.getHost().nil?
-            resolvedHost = metadata.getHost()
+          resolvedHost = metadata.getHost()
+          if resolvedHost != nil && resolvedHost != 0
+            unless Util.validateURL(resolvedHost)
+              raise APIException.new "URL: '" + resolvedHost + "' is not a valid url"
+            end
+          else
+            raise APIException.new "URL: '' is not a valid url"
           end
+
           
           uri = URI.parse(resolvedHost)
           #Get the http object
@@ -221,12 +213,21 @@ module MasterCard
           queryParams = Util.subMap(input,config.getQueryParams())
           
           #We need to resolve the host
-          resolvedHost = @baseURL
-          unless metadata.getHost().nil?
-            resolvedHost = metadata.getHost()
+          resolvedHost = metadata.getHost()
+
+          resourcePath = config.getResoucePath().dup
+          if (resourcePath.index("{:env}"))
+            contenxt = ""
+            
+            if !metadata.getContext().nil? && !metadata.getContext().empty?
+              contenxt = metadata.getContext()
+            end
+            
+            resourcePath.sub!("{:env}", contenxt)
+            resourcePath.sub!("//", "/") 
           end
           
-          fullUrl = resolvedHost + config.getResoucePath()
+          fullUrl = resolvedHost + resourcePath
 
           #Get the resourcePath containing values from input
           fullUrl = getFullResourcePath(config.getAction(),fullUrl,input)
