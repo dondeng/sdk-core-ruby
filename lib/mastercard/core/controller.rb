@@ -56,35 +56,20 @@ module MasterCard
         JSON_STR       = "JSON"
 
 
-        def generateHost()
-          #Set the parameters
-          baseURL = "https://"
-          if Config.getSudDomain()
-            baseURL += Config.getSudDomain()
-            baseURL += "."
-          end
-          baseURL += "api.mastercard.com"
-          
-          baseURL = removeForwardSlashFromTail(baseURL)
-
-          #Verify if the URL is correct
-          unless Util.validateURL(baseURL)
-            raise APIException.new "URL: '" + baseURL + "' is not a valid url"
-          end
-          
-          return baseURL
-
-        end
-
         def execute(config,metadata,input)
           
           #Check preconditions for execute
           preCheck()
           
-          resolvedHost = generateHost()
-          unless metadata.getHost().nil?
-            resolvedHost = metadata.getHost()
+          resolvedHost = metadata.getHost()
+          if resolvedHost != nil && resolvedHost != 0
+            unless Util.validateURL(resolvedHost)
+              raise APIException.new "URL: '" + resolvedHost + "' is not a valid url"
+            end
+          else
+            raise APIException.new "URL: '' is not a valid url"
           end
+
           
           uri = URI.parse(resolvedHost)
           #Get the http object
@@ -228,22 +213,17 @@ module MasterCard
           queryParams = Util.subMap(input,config.getQueryParams())
           
           #We need to resolve the host
-          resolvedHost = generateHost()
-          unless metadata.getHost().nil?
-            resolvedHost = metadata.getHost()
-          end
-          
+          resolvedHost = metadata.getHost()
+
           resourcePath = config.getResoucePath().dup
           if (resourcePath.index("{:env}"))
-            environment = ""
+            contenxt = ""
             
-            if !metadata.getEnvironment().nil? && !metadata.getEnvironment().empty?
-              environment = metadata.getEnvironment()
-            elsif !Config.getEnvironment().nil? && !Config.getEnvironment().empty?
-              environment = Config.getEnvironment()
+            if !metadata.getContext().nil? && !metadata.getContext().empty?
+              contenxt = metadata.getContext()
             end
             
-            resourcePath.sub!("{:env}", environment)
+            resourcePath.sub!("{:env}", contenxt)
             resourcePath.sub!("//", "/") 
           end
           

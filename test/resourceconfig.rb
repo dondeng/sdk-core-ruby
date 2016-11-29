@@ -24,36 +24,73 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-module MasterCard
-  module Core
-    module Constants
-      API_BASE_LIVE_URL       = "https://api.mastercard.com"
-      API_BASE_SANDBOX_URL    = "https://sandbox.api.mastercard.com"
-    end
 
-    module Environment
-      PRODUCTION  = "production"
-      SANDBOX     = "sandbox"
-      STAGE       = "stage"
-      DEV         = "dev"
-      MTF         = "mtf"
-      ITF         = "itf"
-      LOCALHOST   = "localhost"
-      DEVCLOUD    = "devcloud"
-      LABSCLOUD   = "labscloud"
-      OTHER1      = "other1"
-      OTHER2      = "other2"
-      OTHER3      = "other3"
-      MAPPING     = {
-          "production" => ["https://api.mastercard.com", nil],
-          "sandbox"  => ["https://sandbox.api.mastercard.com", nil],
-          "stage"  => ["https://stage.api.mastercard.com", nil],
-          "dev"  => ["https://dev.api.mastercard.com", nil],
-          "mtf"  => ["https://sandbox.api.mastercard.com", "mtf"],
-          "itf"  => ["https://sandbox.api.mastercard.com", "itf"],
-          "localhost"  => ["http://localhost:8081", nil]
-      }
+require "mastercard/core/constants"
+require "mastercard/core/config"
+
+
+class ResourceConfig
+    include MasterCard::Core
+
+    @@instance = nil
+
+    def initialize
+        @name = "someRandomName"
+        @override = nil
+        @host = nil
+        @context = nil
+        @version = "0.0.1"
+
+        Config.registerResourceConfig(self)
+        currentEnvironment = Config.getEnvironment()
+        self.setEnvironment(currentEnvironment)
 
     end
-  end
+
+
+    def self.instance
+        return @@instance
+    end
+
+
+    def getName
+        return @name
+    end
+
+
+    def getHost
+        unless @override.nil? || @override == 0
+            return @@override
+        else
+            return @host
+        end
+    end
+
+    def getContext
+        return @context
+    end
+
+    def getVersion
+        return @version
+    end
+
+    def setEnvironment(environmet)
+        if Environment::MAPPING.key?(environmet)
+            tuple = Environment::MAPPING[environmet]
+            @host = tuple[0]
+            @context = tuple[1]
+        end
+    end
+
+    @@instance = ResourceConfig.new
+
+    private_class_method :new
 end
+
+
+
+
+
+
+
+

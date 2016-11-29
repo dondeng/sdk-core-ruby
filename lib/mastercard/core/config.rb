@@ -32,10 +32,9 @@ module MasterCard
 
       private
       @@debug   = false
-      @@environment = nil
-      @@subdomain = "sandbox"
-      @@authentication = nil
-      @@localhost  = false
+      @@environment = Environment::SANDBOX
+      @@authentication = nil;
+      @@registeredInstances = {}
 
       public
       def self.setDebug(debug)
@@ -48,40 +47,30 @@ module MasterCard
 
       def self.setSandbox(sandbox)
         if sandbox
-          @@subdomain = "sandbox"
+          @@environment = Environment::SANDBOX
         else
-          @@subdomain = nil
+          @@environment = Environment::PRODUCTION
         end
       end
       
-      def self.isSandbox()
-        return @@subdomain == "sandbox"
+      def self.isSandbox
+        return @@environment == Environment::SANDBOX
       end
-      
-      def self.getSudDomain()
-        return @@subdomain
-      end
-      
-      def self.setSubDomain(subdomain)
-        if !subdomain.nil? && !subdomain.empty? 
-          @@subdomain = subdomain
-        else 
-          @@subdomain = nil
-        end
-      end
-      
-      def self.getEnvironment()
+
+
+      def self.getEnvironment
         return @@environment
       end
       
       def self.setEnvironment(environment)
-        if !environment.nil? && !environment.empty? 
-          @@environment = environment
-        else
-          @@environment = nil
+
+        if !environment.nil? && !environment.empty?
+          if Environment::MAPPING.key?(environment)
+            @@registeredInstances.values().each { |instance| instance.setEnvironment(environment) }
+            @@environment = environment
+          end
         end
       end
-
 
 
       def self.setAuthentication(auth)
@@ -90,6 +79,20 @@ module MasterCard
 
       def self.getAuthentication
         return @@authentication
+      end
+
+      def self.registerResourceConfig(instance)
+        if !@@registeredInstances.key?(instance.class.name)
+          @@registeredInstances[instance.class.name] = instance
+        end
+      end
+
+      def self.clearResourceConfig
+        @@registeredInstances = {}
+      end
+
+      def self.sizeResourceConfig
+         return @@registeredInstances.length
       end
 
     end

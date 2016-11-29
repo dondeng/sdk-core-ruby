@@ -59,7 +59,7 @@ module MasterCard
           oAuthParameters.setOAuthConsumerKey(@clientId)
           oAuthParameters.setOAuthNonce(Util.getNonce())
           oAuthParameters.setOAuthTimestamp(Util.getTimestamp())
-          oAuthParameters.setOAuthSignatureMethod("RSA-SHA1")
+          oAuthParameters.setOAuthSignatureMethod("RSA-SHA256")
           oAuthParameters.setOAuthVersion("1.0")
 
           if body.nil?
@@ -72,7 +72,7 @@ module MasterCard
             #Do nothing and hope for the best
           end
 
-          encodedHash = sha1Base64Encode(body)
+          encodedHash = sha256Base64Encode(body)
           oAuthParameters.setOAuthBodyHash(encodedHash)
 
           return oAuthParameters
@@ -133,7 +133,7 @@ module MasterCard
           privateKeyFile = File.read(@privateKey)
 
           p12 = OpenSSL::PKCS12.new(privateKeyFile, @password)
-          sign = p12.key.sign OpenSSL::Digest::SHA1.new, message
+          sign = p12.key.sign OpenSSL::Digest::SHA256.new, message
 
           return base64Encode(sign)
 

@@ -24,36 +24,41 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-module MasterCard
-  module Core
-    module Constants
-      API_BASE_LIVE_URL       = "https://api.mastercard.com"
-      API_BASE_SANDBOX_URL    = "https://sandbox.api.mastercard.com"
-    end
+require 'test_helper'
+require 'accountinquiry'
+require 'mastercard/security/oauth'
+require 'mastercard/core/model'
 
-    module Environment
-      PRODUCTION  = "production"
-      SANDBOX     = "sandbox"
-      STAGE       = "stage"
-      DEV         = "dev"
-      MTF         = "mtf"
-      ITF         = "itf"
-      LOCALHOST   = "localhost"
-      DEVCLOUD    = "devcloud"
-      LABSCLOUD   = "labscloud"
-      OTHER1      = "other1"
-      OTHER2      = "other2"
-      OTHER3      = "other3"
-      MAPPING     = {
-          "production" => ["https://api.mastercard.com", nil],
-          "sandbox"  => ["https://sandbox.api.mastercard.com", nil],
-          "stage"  => ["https://stage.api.mastercard.com", nil],
-          "dev"  => ["https://dev.api.mastercard.com", nil],
-          "mtf"  => ["https://sandbox.api.mastercard.com", "mtf"],
-          "itf"  => ["https://sandbox.api.mastercard.com", "itf"],
-          "localhost"  => ["http://localhost:8081", nil]
-      }
 
-    end
+class InsightsTest < Minitest::Test
+  include MasterCard::Security::OAuth
+  include MasterCard::Core
+  include MasterCard::Core::Model
+  include MasterCard::Test
+
+  def setup
+    keyFile =  File.join(File.dirname(__FILE__), "resources", "mcapi_sandbox_key.p12")
+    @auth = OAuth::OAuthAuthentication.new("L5BsiPgaF-O3qA36znUATgQXwJB6MRoMSdhjd7wt50c97279!50596e52466e3966546d434b7354584c4975693238513d3d",keyFile, "test", "password")
+    Config.setAuthentication(@auth)
+  end
+
+  def test_example_insights
+
+    mapObj = RequestMap.new
+
+    mapObj.set("Period","")
+    mapObj.set("CurrentRow","1")
+    mapObj.set("Sector","")
+    mapObj.set("Offset","25")
+    mapObj.set("Country","US")
+    mapObj.set("Ecomm","")
+
+
+    response = AccountInquiry.update(mapObj)
+
+    assert_equal("True",response.get("Account.Listed"))
+    assert_equal("S",response.get("Account.ReasonCode"))
+    assert_equal("STOLEN",response.get("Account.Reason"))
+
   end
 end

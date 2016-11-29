@@ -36,7 +36,7 @@ module MasterCard
       def validateURL(url)
         #
         # Validates that the given string is a valid URL
-        if url =~ URI::regexp
+        if url =~ URI::DEFAULT_PARSER.make_regexp
           return true
         else
           return false
@@ -132,6 +132,12 @@ module MasterCard
         #
         #Base 64 encodes the SHA1 digest of text
         return base64Encode(Digest::SHA1.digest text)
+      end
+
+      def sha256Base64Encode(text)
+        #
+        #Base 64 encodes the SHA1 digest of text
+        return base64Encode(Digest::SHA256.digest text)
       end
 
       def uriRfc3986Encode(value)

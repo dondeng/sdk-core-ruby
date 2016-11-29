@@ -24,36 +24,37 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+require "mastercard/core/model"
+
 module MasterCard
-  module Core
-    module Constants
-      API_BASE_LIVE_URL       = "https://api.mastercard.com"
-      API_BASE_SANDBOX_URL    = "https://sandbox.api.mastercard.com"
-    end
+  module Test
+    class AccountInquiry < MasterCard::Core::Model::BaseObject
+      include MasterCard::Core::Model
 
-    module Environment
-      PRODUCTION  = "production"
-      SANDBOX     = "sandbox"
-      STAGE       = "stage"
-      DEV         = "dev"
-      MTF         = "mtf"
-      ITF         = "itf"
-      LOCALHOST   = "localhost"
-      DEVCLOUD    = "devcloud"
-      LABSCLOUD   = "labscloud"
-      OTHER1      = "other1"
-      OTHER2      = "other2"
-      OTHER3      = "other3"
-      MAPPING     = {
-          "production" => ["https://api.mastercard.com", nil],
-          "sandbox"  => ["https://sandbox.api.mastercard.com", nil],
-          "stage"  => ["https://stage.api.mastercard.com", nil],
-          "dev"  => ["https://dev.api.mastercard.com", nil],
-          "mtf"  => ["https://sandbox.api.mastercard.com", "mtf"],
-          "itf"  => ["https://sandbox.api.mastercard.com", "itf"],
-          "localhost"  => ["http://localhost:8081", nil]
+      @__store = {
+        'update' => OperationConfig.new("/fraud/loststolen/v1/account-inquiry", "update", [], [])
       }
+      
+      protected 
+      
+      def self.getOperationConfig(uuid)
+        if @__store.key?(uuid)
+          return @__store[uuid]
+        end
+        raise NotImplementedError.new("Invalid operationUUID supplied:"+ operationUUID)
+      end
+      
+      def self.getOperationMetadata()
+        return OperationMetadata.new("0.0.1", "https://sandbox.api.mastercard.com")
+      end
 
+      
+      public
+      
+      def self.update(criteria)
+        return self.execute("update", AccountInquiry.new(criteria))
+      end
+      
     end
   end
 end
