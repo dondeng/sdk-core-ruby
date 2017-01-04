@@ -36,21 +36,21 @@ module MasterCard
       SANDBOX     = "sandbox"
       STAGE       = "stage"
       DEV         = "dev"
-      MTF         = "mtf"
-      ITF         = "itf"
+      PRODUCTION_MTF         = "production_mtf"
+      PRODUCTION_ITF         = "production_itf"
+      STAGE_MTF       = "stage_mtf"
+      STAGE_ITF       = "stage_itf"
       LOCALHOST   = "localhost"
-      DEVCLOUD    = "devcloud"
-      LABSCLOUD   = "labscloud"
-      OTHER1      = "other1"
-      OTHER2      = "other2"
-      OTHER3      = "other3"
+      OTHER      = "other"
       MAPPING     = {
           "production" => ["https://api.mastercard.com", nil],
           "sandbox"  => ["https://sandbox.api.mastercard.com", nil],
           "stage"  => ["https://stage.api.mastercard.com", nil],
           "dev"  => ["https://dev.api.mastercard.com", nil],
-          "mtf"  => ["https://sandbox.api.mastercard.com", "mtf"],
-          "itf"  => ["https://sandbox.api.mastercard.com", "itf"],
+          "production_mtf" => ["https://api.mastercard.com", "mtf"],
+          "production_itf" => ["https://api.mastercard.com", "itf"],
+          "stage_mtf"  => ["https://stage.api.mastercard.com", "mtf"],
+          "stage_itf"  => ["https://stage.api.mastercard.com", "itf"],
           "localhost"  => ["http://localhost:8081", nil]
       }
 

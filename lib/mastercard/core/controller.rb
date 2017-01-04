@@ -216,14 +216,14 @@ module MasterCard
           resolvedHost = metadata.getHost()
 
           resourcePath = config.getResoucePath().dup
-          if (resourcePath.index("{:env}"))
+          if (resourcePath.index("#env"))
             contenxt = ""
             
             if !metadata.getContext().nil? && !metadata.getContext().empty?
               contenxt = metadata.getContext()
             end
             
-            resourcePath.sub!("{:env}", contenxt)
+            resourcePath.sub!("#env", contenxt)
             resourcePath.sub!("//", "/") 
           end
           
