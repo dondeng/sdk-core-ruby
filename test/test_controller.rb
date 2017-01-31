@@ -163,7 +163,6 @@ class APIControllerTest < Minitest::Test
 
 
     Config.setSandbox(true)
-    resourceConfig = ResourceConfig.instance
     assert_equal(1, Config.sizeResourceConfig())
 
     config = OperationConfig.new("/atms/v1/#env/locations", "query", [], [])

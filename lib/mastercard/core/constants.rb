@@ -34,6 +34,8 @@ module MasterCard
     module Environment
       PRODUCTION  = "production"
       SANDBOX     = "sandbox"
+      SANDBOX_MTF     = "sandbox_mtf"
+      SANDBOX_ITF     = "sandbox_itf"
       STAGE       = "stage"
       DEV         = "dev"
       PRODUCTION_MTF         = "production_mtf"
@@ -45,6 +47,8 @@ module MasterCard
       MAPPING     = {
           "production" => ["https://api.mastercard.com", nil],
           "sandbox"  => ["https://sandbox.api.mastercard.com", nil],
+          "sandbox_mtf"  => ["https://sandbox.api.mastercard.com", "mtf"],
+          "sandbox_itf"  => ["https://sandbox.api.mastercard.com", "itf"],
           "stage"  => ["https://stage.api.mastercard.com", nil],
           "dev"  => ["https://dev.api.mastercard.com", nil],
           "production_mtf" => ["https://api.mastercard.com", "mtf"],
