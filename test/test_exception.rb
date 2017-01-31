@@ -25,29 +25,29 @@
 # SUCH DAMAGE.
 #
 require 'test_helper'
-require 'mastercard/core/exceptions'
+require 'mastercard/core/model'
 
 class ExceptionTest < Minitest::Test
   include MasterCard::Core::Exceptions
 
-  # def test_api_exception_without_errorcode
+  def test_api_exception_without_errorcode
 
-  #   exceptionObj =  APIException.new "naman", 200
-  #   assert_equal(200,exceptionObj.getHttpStatus)
-  #   assert_equal("naman",exceptionObj.getMessage)
-  #   assert_equal(nil,exceptionObj.getReasonCode)
-  #   assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "naman" (http_status: 200)')
-  # end
+    exceptionObj =  APIException.new "naman", 200
+    assert_equal(200,exceptionObj.getHttpStatus)
+    assert_equal("naman",exceptionObj.getMessage)
+    assert_equal(nil,exceptionObj.getReasonCode)
+    assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "naman" (http_status: 200)')
+  end
 
-  # def test_api_exception_with_errorcode
+  def test_api_exception_with_errorcode
 
-  #   exceptionObj =  APIException.new "naman", 400, {"Errors" => {"Error"=>{"ReasonCode"=>2098,"Description"=>"This is an Error", "Recoverable"=>false, "Source"=>"System"}}}
-  #   assert_equal(400,exceptionObj.getHttpStatus)
-  #   assert_equal(2098,exceptionObj.getReasonCode)
-  #   assert_equal("System",exceptionObj.getSource)
-  #   assert_equal("This is an Error",exceptionObj.getMessage)
-  #   assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "This is an Error" (http_status: 400, reason_code: 2098)')
-  # end
+    exceptionObj =  APIException.new "naman", 400, {"Errors" => {"Error"=>{"ReasonCode"=>2098,"Description"=>"This is an Error", "Recoverable"=>false, "Source"=>"System"}}}
+    assert_equal(400,exceptionObj.getHttpStatus)
+    assert_equal(2098,exceptionObj.getReasonCode)
+    assert_equal("System",exceptionObj.getSource)
+    assert_equal("This is an Error",exceptionObj.getMessage)
+    assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "This is an Error" (http_status: 400, reason_code: 2098)')
+  end
 
 
   def test_api_exception_with_array
@@ -60,51 +60,42 @@ class ExceptionTest < Minitest::Test
     assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "This is an Error" (http_status: 400, reason_code: 2098)')
   end
 
-  # def test_api_connection_exception
+  def test_api_connection_exception
 
-  #     exceptionObj =  APIException.new "naman", 500, nil
-  #     assert_equal(500,exceptionObj.getHttpStatus)
+      exceptionObj =  APIException.new "naman", 500, nil
+      assert_equal(500,exceptionObj.getHttpStatus)
 
-  # end
+  end
 
-  # def test_authentication_exception
+  def test_authentication_exception
 
-  #     exceptionObj =  APIException.new "Some error", 401, nil
-  #     assert_equal(401,exceptionObj.getHttpStatus)
+      exceptionObj =  APIException.new "Some error", 401, nil
+      assert_equal(401,exceptionObj.getHttpStatus)
 
-  # end
+  end
 
-  # def test_not_allowed_exception
+  def test_not_allowed_exception
 
-  #     exceptionObj =  APIException.new "Some error", 403, nil
-  #     assert_equal(403,exceptionObj.getHttpStatus)
+      exceptionObj =  APIException.new "Some error", 403, nil
+      assert_equal(403,exceptionObj.getHttpStatus)
 
-  # end
+  end
 
-  # def test_system_exception
+  def test_system_exception
 
-  #     exceptionObj =  APIException.new "Some error", 500, nil
-  #     assert_equal(500,exceptionObj.getHttpStatus)
+      exceptionObj =  APIException.new "Some error", 500, nil
+      assert_equal(500,exceptionObj.getHttpStatus)
 
-  # end
+  end
 
-  # def test_invalid_request_exception
+  def test_invalid_request_exception
 
-  #   exceptionObj =  APIException.new("Some error",400, {"Errors" => {"Error"=>{"ReasonCode"=>2213,"Description"=>"This is an error","FieldErrors"=>[{"field"=>"Password", "message" => "Password should be of atleast 8 characters", "code" => 1024},{"field"=>"Username", "message" => "Username should be of atleast 8 characters", "code" => 1025}]}}})
-  #   assert_equal(400,exceptionObj.getHttpStatus)
-  #   assert_equal(message,"%s"%exceptionObj)
+    exceptionObj =  APIException.new("Some error",400, {"Errors" => {"Error"=>{"ReasonCode"=>2213,"Description"=>"This is an error","FieldErrors"=>[{"field"=>"Password", "message" => "Password should be of atleast 8 characters", "code" => 1024},{"field"=>"Username", "message" => "Username should be of atleast 8 characters", "code" => 1025}]}}})
+    assert_equal(400,exceptionObj.getHttpStatus)
+    #assert_equal(message,"%s"%exceptionObj)
 
-  # end
+  end
 
-  # def test_field_error
-
-  #     errorObj =  FieldError.new({"field"=>"Password", "message" => "Password should be of atleast 8 characters", "code" => 1024})
-  #     assert_equal("Password",errorObj.getFieldName)
-  #     assert_equal("Password should be of atleast 8 characters",errorObj.getErrorMessage)
-  #     assert_equal(1024,errorObj.getReasonCode)
-  #     assert_equal('Field Error: Password "Password should be of atleast 8 characters" (1024)',"%s"%errorObj)
-
-  # end
 
 
 end

@@ -24,6 +24,9 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+
+require 'mastercard/core/model'
+
 module MasterCard
   module Core
     module Exceptions
@@ -32,6 +35,7 @@ module MasterCard
       # APIException
       ################################################################################
       class APIException  < StandardError
+        include MasterCard::Core::Model
         #
         # Base Class for all the API exceptions
         def initialize(message,http_status=nil, error_data=nil)
@@ -48,7 +52,8 @@ module MasterCard
           #If error_data is not nil set the appropriate message
           unless error_data.nil?
 
-            @raw_error_data = error_data
+            @raw_error_data = SmartMap.new
+            @raw_error_data.setAll(error_data);
 
             error_data_case_insensitive = parseMap(error_data)
 
