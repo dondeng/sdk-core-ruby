@@ -31,7 +31,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{MasterCard core SDK}
   gem.description   = %q{This is the MasterCard OpenAPI core SDK. This provides the base functionality for all MasterCard APIs}
   gem.homepage      = "https://developer.mastercard.com"
-  gem.version       = "1.4.2"
+  gem.version       = "1.4.3"
   gem.license       = "BSD-2-Clause"
 
   gem.files         = Dir["{bin,spec,lib}/**/*"]+ Dir["data/*"]
