@@ -137,20 +137,10 @@ module MasterCard
 
           if 200 <= status && status <= 299
             return content
-          elsif 300 <= status && status <= 399
-            raise InvalidRequestException.new("Unexpected response code returned from the API causing redirect",status,content)
-          elsif status == 400
-            raise InvalidRequestException.new("Bad request",status,content)
-          elsif status == 401
-            raise APIException.new("You are not authorized to make this request",status,content)
-          elsif status == 403
-            raise APIException.new("You are not authorized to make this request",status,content)
-          elsif status == 404
-            raise ObjectNotFoundException.new("Object not found",status,content)
-          elsif status == 405
+          else 
             raise APIException.new("Operation not allowed",status,content)
           else
-            raise SystemException.new("Internal Server Error",status,content)
+            
           end
 
         end
