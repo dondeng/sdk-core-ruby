@@ -139,8 +139,6 @@ module MasterCard
             return content
           else 
             raise APIException.new("Operation not allowed",status,content)
-          else
-            
           end
 
         end
