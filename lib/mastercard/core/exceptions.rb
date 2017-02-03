@@ -24,6 +24,9 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+
+require 'mastercard/core/model'
+
 module MasterCard
   module Core
     module Exceptions
@@ -32,69 +35,80 @@ module MasterCard
       # APIException
       ################################################################################
       class APIException  < StandardError
+        include MasterCard::Core::Model
         #
         # Base Class for all the API exceptions
-        def initialize(message,status=nil, error_data=nil)
+        def initialize(message,http_status=nil, error_data=nil)
           #Call the base class constructor
           super(message)
 
           @message    = message
-          @status     = status
-          @error_data = error_data
-          @error_code = nil
+          @http_status     = http_status
+          @raw_error_data = error_data
+          @reason_code = nil
+          @source = nil
+          @description = nil
 
           #If error_data is not nil set the appropriate message
           unless error_data.nil?
 
-            error_hash = Hash.new
-            # If error_data is of type hash and has Key 'Errors' which has a key 'Error'
-            if error_data.is_a?(Hash) && error_data.key?("Errors") && error_data["Errors"].key?("Error")
+            @raw_error_data = SmartMap.new
+            @raw_error_data.setAll(error_data);
 
-              error_hash = error_data["Errors"]["Error"]
+            error_data_case_insensitive = parseMap(error_data)
+
+            # If error_data is of type hash and has Key 'Errors' which has a key 'Error'
+            if error_data_case_insensitive.key?("errors") && error_data_case_insensitive["errors"].key?("error")
+              error_hash = error_data_case_insensitive["errors"]["error"]
 
               #Case of multiple errors take the first one
-              if error_hash.is_a?(Array)
+              if error_hash.is_a?(Hash)
+                initDataFromHash(error_hash)
+
+              #If error Data is of Type Array
+              elsif error_hash.is_a?(Array)
+                #Take the first error
                 error_hash = error_hash[0]
+                initDataFromHash(error_hash)
               end
-
-              initDataFromHash(error_hash)
-
-            #If error Data is of Type Array
-            elsif error_data.is_a?(Array)
-              #Take the first error
-              error_hash = error_data[0]
-              initDataFromHash(error_hash)
             end
           end
-
         end
 
         def getMessage()
-          return @message
+          if @description.nil?
+            return @message
+          else
+            return @description
+          end
         end
 
-        def getStatus()
-          return @status
+        def getHttpStatus()
+          return @http_status
         end
 
-        def getErrorCode()
-          return @error_code
+        def getReasonCode()
+          return @reason_code
         end
 
-        def getErrorData()
-          return @error_data
+        def getSource()
+          return @source
+        end
+
+        def getRawErrorData()
+          return @raw_error_data
         end
 
         def describe()
           exception = self.class.name
           exception << ": \""
           exception << getMessage()
-          exception << "\" (status: "
-          exception << "%s" % getStatus()
-          errorCode = getErrorCode()
+          exception << "\" (http_status: "
+          exception << "%s" % getHttpStatus()
+          errorCode = getReasonCode()
           unless errorCode.nil?
-            exception << ", error code: "
-            exception << "%s" % getErrorCode()
+            exception << ", reason_code: "
+            exception << "%s" % getReasonCode()
           end
           exception << ")"
           return exception
@@ -107,219 +121,40 @@ module MasterCard
         private
 
         def initDataFromHash(error_hash)
-          @error_code = error_hash.fetch("ReasonCode","")
-          @message    = error_hash.fetch("Message",@message)
+          @reason_code  = error_hash.fetch("reasoncode",nil)
+          @description      = error_hash.fetch("description",@message)
+          @source       = error_hash.fetch("source",nil)
         end
 
-      end
-
-      ################################################################################
-      # ApiConnectionException
-      ################################################################################
-
-      class APIConnectionException < APIException
-        #
-        #Exception raised when there are communication problems contacting the API.
-        def initialize(message=nil,status=nil,error_data=nil)
-
-
-          if status.nil?
-              status = 500
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-        end
-      end
-
-
-      ################################################################################
-      # ObjectNotFoundException
-      ################################################################################
-
-      class ObjectNotFoundException < APIException
-        #
-        #Exception raised when the endpoint does not exist.
-        def initialize(message=nil,status=nil,error_data=nil)
-
-
-          if status.nil?
-              status = 404
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-        end
-      end
-
-      ################################################################################
-      # AuthenticationException
-      ################################################################################
-
-      class AuthenticationException < APIException
-        #
-        #Exception raised where there are problems authenticating a request.
-        def initialize(message=nil,status=nil,error_data=nil)
-
-
-          if status.nil?
-              status = 401
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-        end
-      end
-
-      ################################################################################
-      # InvalidRequestException
-      ################################################################################
-
-      class InvalidRequestException < APIException
-        #
-        #Exception raised when the API request contains errors.
-
-        def initialize(message=nil,status=nil,error_data=nil)
-
-          if status.nil?
-              status = 400
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-
-          @fieldErrors = []
-
-          #If error_data is not nil set the appropriate message
-          unless error_data.nil?
-
-            error_hash = Hash.new
-            # If error_data is of type hash and has Key 'Errors' which has a key 'Error'
-            if error_data.is_a?(Hash) && error_data.key?("Errors") && error_data["Errors"].key?("Error")
-
-              error_hash = error_data["Errors"]["Error"]
-
-              #Case of multiple errors take the first one
-              if error_hash.is_a?(Array)
-                error_hash = error_hash[0]
-              end
-
-              initFieldDataFromHash(error_hash)
-
-            #If error Data is of Type Array
-            elsif error_data.is_a?(Array)
-              #Take the first error
-              error_hash = error_data[0]
-              initFieldDataFromHash(error_hash)
+        def parseMap(map)
+          parsedMap = {}
+          map.each do |k, v|
+            if v.is_a?(Array)
+              parsedMap[k.to_s.downcase] = parseList(v)
+            elsif v.is_a?(Hash)
+              parsedMap[k.to_s.downcase] = parseMap(v)
+            else
+              parsedMap[k.to_s.downcase] = v
             end
           end
+          return parsedMap
         end
 
-
-        def hasFieldErrors
-          return @fieldErrors.length != 0
-        end
-
-        def getFieldErrors
-          return @fieldErrors
-        end
-
-        def describe
-          des = super()
-          @fieldErrors.each do |field_error|
-            des << "\n #{field_error}"
-          end
-          return des
-        end
-
-        def to_s
-          return "%s"%describe()
-        end
-
-        private
-
-        def initFieldDataFromHash(error_hash)
-          if error_hash.key?("FieldErrors")
-            error_hash.fetch("FieldErrors").each do |field_error|
-              @fieldErrors << "%s"%FieldError.new(field_error)
+        def parseList(l)
+          parsedList = []
+          l.each do |v|
+            if v.is_a?(Array)
+              parsedList << parseList(v) 
+            elsif v.is_a?(Hash)
+              parsedList << parseMap(v)
+            else
+              parsedList << v
             end
           end
+          return parsedList
         end
-
-
 
       end
-
-      ################################################################################
-      # NotAllowedException
-      ################################################################################
-
-      class NotAllowedException < APIException
-        #
-        #Exception when a request was not allowed.
-        def initialize(message=nil,status=nil,error_data=nil)
-
-
-          if status.nil?
-              status = 403
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-
-        end
-      end
-
-
-      ################################################################################
-      # SystemException
-      ################################################################################
-
-      class SystemException < APIException
-        #
-        #Exception when there was a system error processing a request.
-        def initialize(message=nil,status=nil,error_data=nil)
-
-
-          if status.nil?
-              status = 500
-          end
-
-          #Call the base class constructor
-          super(message,status,error_data)
-        end
-      end
-
-      ################################################################################
-      # FieldError
-      ################################################################################
-
-      class FieldError
-
-        def initialize(params)
-
-          @name    = params.fetch("field","")
-          @message = params.fetch("message","")
-          @code    = params.fetch("code")
-        end
-
-        def getFieldName
-          return @name
-        end
-
-        def getErrorMessage
-          return @message
-        end
-
-        def getErrorCode
-          return @code
-        end
-
-        def to_s
-          return "Field Error: #{@name} \"#{@message}\" (#{@code})"
-        end
-      end
-
     end
   end
 end
