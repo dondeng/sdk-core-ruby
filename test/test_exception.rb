@@ -54,9 +54,9 @@ class ExceptionTest < Minitest::Test
   def test_api_exception_with_array
 
     exceptionObj =  APIException.new "naman", 400, {"Errors" => {"Error"=>[{"ReasonCode"=>2098,"Description"=>"This is an Error","Recoverable"=>false, "Source"=>"System"}]}}
-    #assert_equal(400,exceptionObj.getHttpStatus)
-    #assert_equal(2098,exceptionObj.getReasonCode)
-    # assert_equal("System",exceptionObj.getSource)
+    assert_equal(400,exceptionObj.getHttpStatus)
+    assert_equal(2098,exceptionObj.getReasonCode)
+     assert_equal("System",exceptionObj.getSource)
     assert_equal("This is an Error",exceptionObj.getMessage)
     assert_equal("%s"%exceptionObj,'MasterCard::Core::Exceptions::APIException: "This is an Error" (http_status: 400, reason_code: 2098)')
   end
@@ -102,6 +102,18 @@ class ExceptionTest < Minitest::Test
     exceptionObj =  APIException.new("Some error",400, {"Errors" => {"Error"=>{"ReasonCode"=>2213,"Description"=>"This is an error","FieldErrors"=>[{"field"=>"Password", "message" => "Password should be of atleast 8 characters", "code" => 1024},{"field"=>"Username", "message" => "Username should be of atleast 8 characters", "code" => 1025}]}}})
     assert_equal(2213,exceptionObj.getRawErrorData().get("Errors.Error.ReasonCode"))
     #assert_equal(message,"%s"%exceptionObj)
+
+  end
+
+  def test_some_other_format
+    exceptionObj = APIException.new("some error", 500, {"errors" =>[{"source"=>"OpenAPIClientId","reasonCode"=>"AUTHORIZATION_FAILED","key"=>"050007","description"=>"Unauthorized Access","recoverable"=>false,"requestId"=>nil,"details"=>{"details"=>[{"name"=>"ErrorDetailCode","value"=>"050007"}]}}]})
+    assert_equal(500,exceptionObj.getHttpStatus)
+    assert_equal("AUTHORIZATION_FAILED",exceptionObj.getReasonCode)
+    assert_equal("OpenAPIClientId",exceptionObj.getSource)
+    assert_equal("Unauthorized Access",exceptionObj.getMessage)
+    
+    assert_equal("AUTHORIZATION_FAILED",exceptionObj.getRawErrorData().get("errors[0].reasonCode"))
+
 
   end
 

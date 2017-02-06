@@ -58,8 +58,13 @@ module MasterCard
             error_data_case_insensitive = parseMap(error_data)
 
             # If error_data is of type hash and has Key 'Errors' which has a key 'Error'
-            if error_data_case_insensitive.key?("errors") && error_data_case_insensitive["errors"].key?("error")
-              error_hash = error_data_case_insensitive["errors"]["error"]
+            if error_data_case_insensitive.key?("errors")
+              if (error_data_case_insensitive["errors"].is_a?(Hash) && error_data_case_insensitive["errors"].key?("error"))
+                error_hash = error_data_case_insensitive["errors"]["error"]
+              elsif error_data_case_insensitive["errors"].is_a?(Array)
+                error_hash = error_data_case_insensitive["errors"][0]
+              end
+
 
               #Case of multiple errors take the first one
               if error_hash.is_a?(Hash)
