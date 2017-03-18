@@ -139,6 +139,14 @@ class APIControllerTest < Minitest::Test
 
     assert_equal(1, Config.sizeResourceConfig())
 
+    Config.setSandbox(true)
+    assert_equal("https://sandbox.api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
+    Config.setSandbox(false)
+    assert_equal("https://api.mastercard.com",resourceConfig.getHost())
+    assert_equal(resourceCongi2.getHost,resourceConfig.getHost())
+
     Config.setEnvironment(Environment::SANDBOX)
     assert_equal("https://sandbox.api.mastercard.com",resourceConfig.getHost())
     assert_equal(resourceCongi2.getHost,resourceConfig.getHost())

@@ -47,8 +47,10 @@ module MasterCard
 
       def self.setSandbox(sandbox)
         if sandbox
+          @@registeredInstances.values().each { |instance| instance.setEnvironment(Environment::SANDBOX) }
           @@environment = Environment::SANDBOX
         else
+          @@registeredInstances.values().each { |instance| instance.setEnvironment(Environment::PRODUCTION) }
           @@environment = Environment::PRODUCTION
         end
       end
